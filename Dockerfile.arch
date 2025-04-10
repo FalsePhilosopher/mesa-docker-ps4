@@ -23,8 +23,12 @@ RUN pacman -Syu --noconfirm && \
     wget \
     curl
 
-# Clone Mesa repository
-RUN git clone https://gitlab.freedesktop.org/mesa/mesa.git /mesa
-
 # Set working directory
-WORKDIR /mesa
+WORKDIR /workspace
+
+# Copy scripts and patches
+COPY build.sh /workspace/
+COPY patches/ /workspace/patches/
+
+# Make the build script executable
+RUN chmod +x build.sh

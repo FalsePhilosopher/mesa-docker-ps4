@@ -16,7 +16,7 @@ This repository provides Dockerfiles for the following distributions:
 ### Building the Docker Image
 1. Clone the repository:
    ```bash
-   git clone https://github.com/FalsePhilosopher/mesa-docker-ps4
+   git clone https://github.com/your-username/mesa-docker-ps4.git
    cd mesa-docker-ps4
    ```
 
