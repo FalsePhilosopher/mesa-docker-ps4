@@ -1,0 +1,31 @@
+# Base image
+FROM fedora:latest
+
+# Install dependencies
+RUN dnf update -y && \
+    dnf install -y \
+    gcc \
+    gcc-c++ \
+    git \
+    meson \
+    ninja-build \
+    python3 \
+    python3-pip \
+    python3-setuptools \
+    libdrm-devel \
+    mesa-libgbm-devel \
+    libX11-devel \
+    libXext-devel \
+    libXdamage-devel \
+    libXfixes-devel \
+    libxcb-devel \
+    libXxf86vm-devel \
+    zlib-devel \
+    wget \
+    curl
+
+# Clone Mesa repository
+RUN git clone https://gitlab.freedesktop.org/mesa/mesa.git /mesa
+
+# Set working directory
+WORKDIR /mesa
