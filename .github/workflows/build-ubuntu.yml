@@ -1,12 +1,7 @@
-name: Docker Build and Test
+name: Docker Build Ubuntu
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
+  workflow_dispatch:
 
 jobs:
   build-and-test:
