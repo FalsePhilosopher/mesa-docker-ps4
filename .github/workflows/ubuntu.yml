@@ -15,9 +15,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-            apt-get update
-            apt build-dep mesa -y
-            apt install -y \
+            sudo apt-get update
+            sudo apt build-dep mesa -y
+            sudo apt install -y \
             build-essential \
             glslang-tools \
             libelf-dev \
