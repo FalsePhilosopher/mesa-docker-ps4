@@ -38,6 +38,7 @@ jobs:
             libvdpau1 \
             llvm-17-dev \
             llvm-spirv-17 \
+            spirv-tools \
             libllvmspirvlib-17-dev \
             bindgen \
             meson \
