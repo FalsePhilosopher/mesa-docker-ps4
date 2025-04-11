@@ -13,9 +13,13 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
+      - name: Enable source repositories
+        run: |
+          sudo sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list
+          sudo apt update
+
       - name: Install dependencies
         run: |
-            sudo apt-get update
             sudo apt build-dep mesa -y
             sudo apt install -y \
             build-essential \
