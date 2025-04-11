@@ -93,10 +93,8 @@ jobs:
           -D tools=[] \
           -D zstd=enabled \
           -D microsoft-clc=disabled \
-          ninja "{$NINJAFLAGS}" -C build64
-
+          ninja -C build64
           
-      # Step 4: Build and install libdrm for PS4
       - name: Build and install libdrm
         working-directory: ./mesa
         run: |
