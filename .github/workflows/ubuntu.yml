@@ -15,8 +15,9 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt-get update
-          sudo apt-get install -y \
+            apt-get update
+            apt build-dep mesa -y
+            apt install -y \
             build-essential \
             glslang-tools \
             libelf-dev \
@@ -44,6 +45,7 @@ jobs:
             libwayland-dev \
             libwayland-egl-backend-dev \
             wayland-protocols \
+            libxcb-randr0-dev \
             xorg-dev \
             xserver-xorg-dev \
             libpciaccess-dev \
