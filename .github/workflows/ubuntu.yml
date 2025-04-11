@@ -20,6 +20,7 @@ jobs:
             build-essential \
             glslang-tools \
             libclc-19-dev \
+            llvm-spirv-19 \
             bindgen \
             meson \
             ninja-build \
