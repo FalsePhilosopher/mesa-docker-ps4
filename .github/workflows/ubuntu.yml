@@ -19,15 +19,15 @@ jobs:
           sudo apt-get install -y \
             build-essential \
             glslang-tools \
-            clang-19 \
-            clang-tools-19 \
-            libclc-19-dev \
-            libclang-19-dev \
+            libclang-17-dev \
+            clang-tools-17 \
+            libclc-17-dev \
+            libclang-17-dev \
             libclang-cpp19 \
             libudev-dev \
             libvdpau1 \
-            llvm-19-dev \
-            llvm-spirv-19 \
+            llvm-17-dev \
+            llvm-spirv-17 \
             libllvmspirvlib-17-dev \
             bindgen \
             meson \
