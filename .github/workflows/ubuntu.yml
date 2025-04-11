@@ -60,7 +60,7 @@ jobs:
           patch  -Np1 < mesa.patch
           mkdir -p build64
           cd build
-         meson setup  build64 \
+           meson setup  build64 \
           -D b_ndebug=true \
           -D b_lto=true \
           -D buildtype=plain \
