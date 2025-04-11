@@ -1,4 +1,4 @@
-name: Build Mesa and Components for PS4 Ubuntu
+name: Build Mesa on Ubuntu
 
 on:
   workflow_dispatch:
