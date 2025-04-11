@@ -13,14 +13,6 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
-      - name: Clone Mesa
-        run: |
-          git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
-          cd mesa
-          # Fetch the latest Mesa release tag
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          git checkout $latest_tag
-
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -44,9 +36,25 @@ jobs:
             automake \
             libtool
 
-      - name: Build Mesa
+      - name: Clone Mesa
         run: |
-          patch  -Np1 < ../patches/mesa.patch
+          git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
+          cd mesa
+          # Fetch the latest Mesa release tag
+          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
+          git checkout $latest_tag
+
+      - name: Copy patch
+        working-directory: ./patches
+        run: |
+          cp mesa.patch ../mesa
+          cp libdrm.patch ../mesa/libdrm
+          cp xf86-video-amdgpu.patch ../mesa
+
+      - name: Build Mesa
+        working-directory: ./mesa
+        run: |
+          patch  -Np1 < mesa.patch
           mkdir -p build64
           cd build
            meson setup  build64 \
@@ -91,9 +99,10 @@ jobs:
           
       # Step 4: Build and install libdrm for PS4
       - name: Build and install libdrm
+        working-directory: ./mesa
         run: |
           cd libdrm
-          patch  -Np1 < ../patches/libdrm.patch
+          patch  -Np1 < libdrm.patch
           .meson setup build64 \
           --prefix /usr \
           --libdir x86_64 \
@@ -106,11 +115,11 @@ jobs:
           ninja -C build64
 
       # Step 7: Build xf86-video-amdgpu for PS4
-      - name: Build xf86-video-amdgpu
-        run: |
-          patch  -Np1 < ../patches/xf86-video-amdgpu.patch
-          cd xf86-video-amdgpu
-          ./autogen.sh --prefix=/usr
-          make
-          sudo make install
-          cd ../..
+      #- name: Build xf86-video-amdgpu
+       # run: |
+        #  patch  -Np1 < ../patches/xf86-video-amdgpu.patch
+         # cd xf86-video-amdgpu
+          #./autogen.sh --prefix=/usr
+          #make
+          #sudo make install
+          #cd ../..
