@@ -23,7 +23,7 @@ jobs:
             llvm-spirv-19 \
             libudev-dev \
             libvdpau1 \
-            libllvmspirvlib-19-dev \
+            libllvmspirvlib-17-dev \
             bindgen \
             meson \
             ninja-build \
