@@ -21,6 +21,7 @@ jobs:
             glslang-tools \
             libclc-19-dev \
             llvm-spirv-19 \
+            libllvmspirvlib19.1 \
             bindgen \
             meson \
             ninja-build \
