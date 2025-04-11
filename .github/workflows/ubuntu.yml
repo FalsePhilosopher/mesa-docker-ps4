@@ -44,16 +44,10 @@ jobs:
             autoconf \
             automake \
             libtool
-        
-      - name: copy patches
-        run: |
-          cd patches
-          cp *.patch ../mesa
-          cd ../mesa
 
       - name: Build Mesa
         run: |
-          patch  -Np1 < mesa.patch
+          patch  -Np1 < ../patches/mesa.patch
           mkdir -p build64
           cd build
            meson setup  build64 \
@@ -100,7 +94,7 @@ jobs:
       - name: Build and install libdrm
         run: |
           cd libdrm
-          patch  -Np1 < ../libdrm.patch
+          patch  -Np1 < ../patches/libdrm.patch
           .meson setup build64 \
           --prefix /usr \
           --libdir x86_64 \
@@ -115,7 +109,7 @@ jobs:
       # Step 7: Build xf86-video-amdgpu for PS4
       - name: Build xf86-video-amdgpu
         run: |
-          patch  -Np1 < ../xf86-video-amdgpu.patch
+          patch  -Np1 < ../patches/xf86-video-amdgpu.patch
           cd xf86-video-amdgpu
           ./autogen.sh --prefix=/usr
           make
