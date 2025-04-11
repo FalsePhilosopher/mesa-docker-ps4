@@ -55,8 +55,7 @@ jobs:
       - name: Build Mesa
         working-directory: ./mesa
         run: |
-          mkdir -p build64
-          cd build64
+          mkdir build64
           meson setup build64 \
           -D b_ndebug=true \
           -D b_lto=true \
