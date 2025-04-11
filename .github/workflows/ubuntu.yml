@@ -22,7 +22,6 @@ jobs:
           git checkout $latest_tag
           cd ..
 
-      # Step 3: Install required dependencies
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -51,10 +50,7 @@ jobs:
           cd patches
           cp *.patch ../mesa
           cd ../mesa
-          git apply libdrm.patch
-          git apply xf86-video-amdgpu.patch
 
-      # Step 6: Build Mesa for PS4
       - name: Build Mesa
         run: |
           patch  -Np1 < mesa.patch
@@ -120,7 +116,7 @@ jobs:
       - name: Build xf86-video-amdgpu
         run: |
           patch  -Np1 < ../xf86-video-amdgpu.patch
-          cd xf86-video-amdgpu-ps4
+          cd xf86-video-amdgpu
           ./autogen.sh --prefix=/usr
           make
           sudo make install
