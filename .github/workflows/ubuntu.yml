@@ -10,7 +10,7 @@ jobs:
 
     steps:
     
-    - name: Checkout the repository
+      - name: Checkout the repository
         uses: actions/checkout@v4
 
       - name: Clone Mesa
@@ -46,7 +46,7 @@ jobs:
             automake \
             libtool
         
-        - name: Apply patches
+      - name: Apply patches
         run: |
           cd patches
           cp *.patch ../mesa
@@ -55,6 +55,16 @@ jobs:
           git apply libdrm.patch
           git apply xf86-video-amdgpu.patch
 
+      # Step 6: Build Mesa for PS4
+      - name: Build Mesa
+        run: |
+          mkdir -p build
+          cd build
+          meson --prefix=/usr -Dplatforms=drm -Ddri-drivers= -Dvulkan-drivers= -Dgallium-drivers=radeonsi,svga,swrast ..
+          ninja
+          sudo ninja install
+
+          
       # Step 4: Build and install libdrm for PS4
       - name: Build and install libdrm
         run: |
@@ -62,17 +72,6 @@ jobs:
           ./autogen.sh --prefix=/usr
           make
           sudo make install
-          cd ../..
-
-      # Step 6: Build Mesa for PS4
-      - name: Build Mesa
-        run: |
-          cd mesa
-          mkdir -p build
-          cd build
-          meson --prefix=/usr -Dplatforms=drm -Ddri-drivers= -Dvulkan-drivers= -Dgallium-drivers=radeonsi,svga,swrast ..
-          ninja
-          sudo ninja install
           cd ../..
 
       # Step 7: Build xf86-video-amdgpu for PS4
