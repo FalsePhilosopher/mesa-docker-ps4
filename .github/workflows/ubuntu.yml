@@ -51,10 +51,10 @@ jobs:
           cp libdrm.patch ../mesa/libdrm
           cp xf86-video-amdgpu.patch ../mesa
 
+# Removed patch  -Np1 < mesa.patch for now
       - name: Build Mesa
         working-directory: ./mesa
         run: |
-          patch  -Np1 < mesa.patch
           mkdir -p build64
           cd build
            meson setup  build64 \
