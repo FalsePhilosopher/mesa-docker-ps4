@@ -93,7 +93,6 @@ jobs:
           -D tools=[] \
           -D zstd=enabled \
           -D microsoft-clc=disabled \
-          meson configure build64
           ninja "{$NINJAFLAGS}" -C build64
 
           
@@ -111,7 +110,6 @@ jobs:
           -D udev=false \
           -D valgrind=disabled \
           -D intel=enabled
-          meson configure build64
           ninja -C build64
 
       # Step 7: Build xf86-video-amdgpu for PS4
