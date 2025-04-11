@@ -19,7 +19,7 @@ jobs:
           sudo apt-get install -y \
             build-essential \
             glslang-tools \
-            clang-19 \
+            clang \
             libclc-19-dev \
             llvm-spirv-19 \
             libudev-dev \
