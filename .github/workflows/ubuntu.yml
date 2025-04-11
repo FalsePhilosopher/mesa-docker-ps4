@@ -46,38 +46,81 @@ jobs:
             automake \
             libtool
         
-      - name: Apply patches
+      - name: copy patches
         run: |
           cd patches
           cp *.patch ../mesa
           cd ../mesa
-          git apply mesa.patch
           git apply libdrm.patch
           git apply xf86-video-amdgpu.patch
 
       # Step 6: Build Mesa for PS4
       - name: Build Mesa
         run: |
-          mkdir -p build
+          patch  -Np1 < mesa.patch
+          mkdir -p build64
           cd build
-          meson --prefix=/usr -Dplatforms=drm -Ddri-drivers= -Dvulkan-drivers= -Dgallium-drivers=radeonsi,svga,swrast ..
-          ninja
-          sudo ninja install
+         meson setup  build64 \
+          -D b_ndebug=true \
+          -D b_lto=true \
+          -D buildtype=plain \
+          --wrap-mode=nofallback \
+          -D prefix=/usr \
+          -D sysconfdir=/etc \
+          --libdir=/usr/x86_64 \
+          -D platforms=x11,wayland \
+          -D gallium-drivers=kmsro,radeonsi,r300,r600,nouveau,freedreno,swrast,v3d,vc4,etnaviv,tegra,i915,svga,virgl,panfrost,iris,lima,zink,d3d12,asahi,crocus \
+          -D vulkan-drivers=amd,swrast,intel \
+          -D dri3=enabled \
+          -D egl=enabled \
+          -D gallium-extra-hud=true \
+          -D gallium-nine=true \
+          -D gallium-omx=bellagio \
+          -D gallium-va=enabled \
+          -D gallium-vdpau=enabled \
+          -D gallium-xa=enabled \
+          -D gallium-omx=disabled \
+          -D gbm=enabled \
+          -D gles1=disabled \
+          -D gles2=enabled \
+          -D glvnd=true \
+          -D glx=dri \
+          -D libunwind=enabled \
+          -D llvm=enabled \
+          -D lmsensors=enabled \
+          -D osmesa=true \
+          -D shared-glapi=enabled \
+          -D gallium-opencl=icd \
+          -D valgrind=disabled \
+          -D vulkan-layers=device-select,overlay \
+          -D tools=[] \
+          -D zstd=enabled \
+          -D microsoft-clc=disabled \
+          meson configure build64
+          ninja "{$NINJAFLAGS}" -C build64
 
           
       # Step 4: Build and install libdrm for PS4
       - name: Build and install libdrm
         run: |
           cd libdrm
-          ./autogen.sh --prefix=/usr
-          make
-          sudo make install
-          cd ../..
+          patch  -Np1 < ../libdrm.patch
+          .meson setup build64 \
+          --prefix /usr \
+          --libdir x86_64 \
+          --buildtype plain \
+          --wrap-mode      nofallback \
+          -D udev=false \
+          -D valgrind=disabled \
+          -D intel=enabled
+          meson configure build64
+          ninja -C build64
 
       # Step 7: Build xf86-video-amdgpu for PS4
       - name: Build xf86-video-amdgpu
         run: |
-          cd PS4Linux-ArchDrivers/SRC/xf86-video-amdgpu-ps4
+          patch  -Np1 < ../xf86-video-amdgpu.patch
+          cd xf86-video-amdgpu-ps4
           ./autogen.sh --prefix=/usr
           make
           sudo make install
