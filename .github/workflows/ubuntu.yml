@@ -92,7 +92,6 @@ jobs:
           -D tools=[] \
           -D zstd=enabled \
           -D microsoft-clc=disabled \
-          meson configure build64
           ninja -C build64
           
       - name: Build and install libdrm
