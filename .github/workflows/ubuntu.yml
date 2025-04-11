@@ -22,10 +22,11 @@ jobs:
             clang-19 \
             clang-tools-19 \
             libclc-19-dev \
-            llvm-spirv-19 \
+            libclang-dev \
+            llvm-19-dev \
             libudev-dev \
             libvdpau1 \
-            libclang-dev \
+            llvm-spirv-19 \
             libllvmspirvlib-17-dev \
             bindgen \
             meson \
