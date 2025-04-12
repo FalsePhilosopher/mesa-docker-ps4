@@ -13,6 +13,14 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
+      - name: Cache APT packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            /var/cache/apt/archives
+            /var/lib/apt/lists
+          key: apt-cache-v1
+
       - name: Enable source repositories
         run: |
           source /etc/os-release
@@ -23,8 +31,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-            sudo apt build-dep mesa -y
-            sudo apt install -y \
+          sudo apt build-dep mesa -y
+          sudo apt install -y \
             build-essential \
             glslang-tools \
             libelf-dev \
@@ -61,21 +69,31 @@ jobs:
             automake \
             libtool
 
-      - name: build spirv-tools
+      - name: Cache SPIRV-Tools build
+        id: cache-spirv
+        uses: actions/cache@v4
+        with:
+          path: ~/spirv-tools-install
+          key: spirv-tools-v1
+
+      - name: Build spirv-tools (if not cached)
+        if: steps.cache-spirv.outputs.cache-hit != 'true'
         run: |
           git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
           cd SPIRV-Tools
           python3 utils/git-sync-deps
           mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
           make -j$(nproc)
-          sudo make install
+          make install
+
+      - name: Add SPIRV-Tools to PATH
+        run: echo "$HOME/spirv-tools-install/bin" >> $GITHUB_PATH
 
       - name: Clone Mesa
         run: |
           git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
           cd mesa
-          # Fetch the latest Mesa release tag
           latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
           git checkout $latest_tag
 
@@ -85,7 +103,6 @@ jobs:
           cp mesa.patch ../mesa
           cp libdrm.patch ../mesa/libdrm
           cp xf86-video-amdgpu.patch ../mesa
-
 # Removed patch  -Np1 < mesa.patch for now
       - name: Build Mesa
         working-directory: ./mesa
@@ -93,21 +110,7 @@ jobs:
           mkdir build64
           meson setup build64
           ninja -C build64
-          
-      - name: Build and install libdrm
-        working-directory: ./mesa
-        run: |
-          cd libdrm
-          patch  -Np1 < libdrm.patch
-          .meson setup build64 \
-          --prefix /usr \
-          --libdir x86_64 \
-          --buildtype plain \
-          --wrap-mode      nofallback \
-          -D udev=false \
-          -D valgrind=disabled \
-          -D intel=enabled
-          ninja -C build64
+
 
       # Step 7: Build xf86-video-amdgpu for PS4
       #- name: Build xf86-video-amdgpu
