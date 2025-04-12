@@ -165,7 +165,7 @@ jobs:
       - name: Compress build64 directory
         working-directory: ./mesa
         run: |
-          tar -I 'zstd -19 -T0' -cf ../${{ env.LATEST_TAG }}-build64-PS4.tzst build64
+          tar -I 'zstd -T0' -cf ../${{ env.LATEST_TAG }}-build64-PS4.tzst build64
 
       - name: Upload mesa-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
