@@ -4,14 +4,17 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-mesa-ps4:
-    name: Build Mesa and Components for PS4
+  build-and-cache-spirv:
     runs-on: ubuntu-latest
+    name: Build and Cache SPIRV-Tools
 
     steps:
-    
-      - name: Checkout the repository
-        uses: actions/checkout@v4
+      - name: Cache SPIRV-Tools
+        id: cache-spirv
+        uses: actions/cache@v4
+        with:
+          path: ~/spirv-tools-install
+          key: spirv-tools-v1-20240412
 
       - name: Cache APT packages
         uses: actions/cache@v4
@@ -20,6 +23,34 @@ jobs:
             /var/cache/apt/archives
             /var/lib/apt/lists
           key: apt-cache-v1
+
+      - name: Build SPIRV-Tools if not cached
+        if: steps.cache-spirv.outputs.cache-hit != 'true'
+        run: |
+          sudo apt update
+          sudo apt install -y cmake python3 git g++ pkg-config
+
+          git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
+          cd SPIRV-Tools
+          python3 utils/git-sync-deps
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
+          make -j$(nproc)
+          make install
+
+      - name: Verify SPIRV-Tools install
+        run: |
+          find ~/spirv-tools-install
+          ls ~/spirv-tools-install/bin
+
+  build-mesa-ps4:
+    needs: build-and-cache-spirv
+    runs-on: ubuntu-latest
+    name: Build Mesa and Components for PS4
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v4
 
       - name: Enable source repositories
         run: |
@@ -40,7 +71,6 @@ jobs:
             libclang-17-dev \
             clang-tools-17 \
             libclc-17-dev \
-            libclang-17-dev \
             libclang-cpp19 \
             libudev-dev \
             libvdpau1 \
@@ -49,7 +79,7 @@ jobs:
             spirv-tools \
             libllvmspirvlib-17-dev \
             bindgen \
-            meson-1.5 \
+            meson \
             ninja-build \
             python3-pip \
             python3-setuptools \
@@ -67,28 +97,20 @@ jobs:
             libpciaccess-dev \
             autoconf \
             automake \
-            libtool
+            libtool \
+            zstd
 
-      - name: Cache SPIRV-Tools build
-        id: cache-spirv
+      - name: Restore SPIRV-Tools cache
         uses: actions/cache@v4
         with:
           path: ~/spirv-tools-install
-          key: spirv-tools-v1
+          key: spirv-tools-v1-20240412
 
-      - name: Build spirv-tools (if not cached)
-        if: steps.cache-spirv.outputs.cache-hit != 'true'
+      - name: Set environment paths for SPIRV-Tools
         run: |
-          git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
-          cd SPIRV-Tools
-          python3 utils/git-sync-deps
-          mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
-          make -j$(nproc)
-          make install
-
-      - name: Add SPIRV-Tools to PATH
-        run: echo "$HOME/spirv-tools-install/bin" >> $GITHUB_PATH
+          echo "$HOME/spirv-tools-install/bin" >> $GITHUB_PATH
+          echo "CMAKE_PREFIX_PATH=$HOME/spirv-tools-install" >> $GITHUB_ENV
+          echo "PKG_CONFIG_PATH=$HOME/spirv-tools-install/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Clone Mesa
         run: |
