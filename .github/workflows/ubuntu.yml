@@ -90,7 +90,7 @@ jobs:
             liblua5.4-dev \
             libclang-17-dev \
             clang-tools-17 \
-            libclc-17-dev \
+            libclc-dev \
             libclang-17-dev \
             libclang-cpp19 \
             libudev-dev \
