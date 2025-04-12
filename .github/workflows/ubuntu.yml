@@ -49,7 +49,7 @@ jobs:
             spirv-tools \
             libllvmspirvlib-17-dev \
             bindgen \
-            meson \
+            meson-1.5 \
             ninja-build \
             python3-pip \
             python3-setuptools \
@@ -108,10 +108,55 @@ jobs:
         working-directory: ./mesa
         run: |
           mkdir build64
-          meson setup build64
+          meson setup  build64 \
+          -D b_ndebug=true \
+          -D b_lto=true \
+          -D buildtype=plain \
+          --wrap-mode=nofallback \
+          -D prefix=/usr \
+          -D sysconfdir=/etc \
+          --libdir=/usr/x86_64 \
+          -D platforms=x11,wayland \
+          -D gallium-drivers=kmsro,radeonsi,r300,r600,nouveau,freedreno,swrast,v3d,vc4,etnaviv,tegra,i915,svga,virgl,panfrost,iris,lima,zink,d3d12,asahi,crocus \
+          -D vulkan-drivers=amd,swrast,intel \
+          -D dri3=enabled \
+          -D egl=enabled \
+          -D gallium-extra-hud=true \
+          -D gallium-nine=true \
+          -D gallium-omx=bellagio \
+          -D gallium-va=enabled \
+          -D gallium-vdpau=enabled \
+          -D gallium-xa=enabled \
+          -D gallium-omx=disabled \
+          -D gbm=enabled \
+          -D gles1=disabled \
+          -D gles2=enabled \
+          -D glvnd=true \
+          -D glx=dri \
+          -D libunwind=enabled \
+          -D llvm=enabled \
+          -D lmsensors=enabled \
+          -D osmesa=true \
+          -D shared-glapi=enabled \
+          -D gallium-opencl=icd \
+          -D valgrind=disabled \
+          -D vulkan-layers=device-select,overlay \
+          -D tools=[] \
+          -D zstd=enabled \
+          -D microsoft-clc=disabled \
           ninja -C build64
 
+      - name: Compress build64 directory
+        working-directory: ./mesa
+        run: |
+          tar -I 'zstd -19 -T0' -cf ../mesa-build64.tar.zst build64
 
+      - name: Upload mesa-build64.tar.zst as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: mesa-build64
+          path: mesa-build64.tar.zst
+          
       # Step 7: Build xf86-video-amdgpu for PS4
       #- name: Build xf86-video-amdgpu
        # run: |
