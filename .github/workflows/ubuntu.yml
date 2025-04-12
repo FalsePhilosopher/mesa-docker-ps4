@@ -43,6 +43,28 @@ jobs:
           find ~/spirv-tools-install
           ls ~/spirv-tools-install/bin
 
+      - name: Fetch latest Mesa release tag
+        id: fetch-latest-release
+        run: |
+          curl -s https://gitlab.freedesktop.org/api/v4/projects/176/releases | \
+          jq -r '.[0].tag_name' > latest_release.txt
+          latest_tag=$(cat latest_release.txt)
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
+      - name: Cache Mesa repository
+        id: cache-mesa
+        uses: actions/cache@v4
+        with:
+          path: ./mesa
+          key: mesa-repo-${{ env.LATEST_TAG }}
+
+      - name: Clone Mesa repository if not cached
+        if: steps.cache-mesa.outputs.cache-hit != 'true'
+        run: |
+          git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
+          cd mesa
+          git checkout $LATEST_TAG
+
   build-mesa-ps4:
     needs: build-and-cache-spirv
     runs-on: ubuntu-latest
@@ -112,13 +134,13 @@ jobs:
           echo "$HOME/spirv-tools-install/bin" >> $GITHUB_PATH
           echo "CMAKE_PREFIX_PATH=$HOME/spirv-tools-install" >> $GITHUB_ENV
           echo "PKG_CONFIG_PATH=$HOME/spirv-tools-install/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
-
-      - name: Clone Mesa
-        run: |
-          git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
-          cd mesa
-          latest_tag=$(git describe --tags `git rev-list --tags --max-count=1`)
-          git checkout $latest_tag
+   
+      - name: Restore Mesa repository cache
+        id: restore-mesa
+        uses: actions/cache@v4
+        with:
+          path: ./mesa
+          key: mesa-repo-${{ env.LATEST_TAG }}
 
       - name: Copy patch
         working-directory: ./patches
