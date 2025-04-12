@@ -107,6 +107,7 @@ jobs:
             llvm-spirv-17 \
             spirv-tools \
             libllvmspirvlib-19-dev \
+            rust-bindgen-cli \
             bindgen \
             meson-1.5 \
             ninja-build \
