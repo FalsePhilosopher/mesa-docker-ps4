@@ -62,8 +62,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          sudo apt build-dep mesa -y
-          sudo apt install -y \
+            sudo apt build-dep mesa -y
+            sudo apt install -y \
             build-essential \
             glslang-tools \
             libelf-dev \
@@ -71,6 +71,7 @@ jobs:
             libclang-17-dev \
             clang-tools-17 \
             libclc-17-dev \
+            libclang-17-dev \
             libclang-cpp19 \
             libudev-dev \
             libvdpau1 \
@@ -79,7 +80,7 @@ jobs:
             spirv-tools \
             libllvmspirvlib-17-dev \
             bindgen \
-            meson \
+            meson-1.5 \
             ninja-build \
             python3-pip \
             python3-setuptools \
@@ -97,7 +98,7 @@ jobs:
             libpciaccess-dev \
             autoconf \
             automake \
-            libtool \
+            libtool
             zstd
 
       - name: Restore SPIRV-Tools cache
