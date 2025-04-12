@@ -78,7 +78,7 @@ jobs:
             llvm-17-dev \
             llvm-spirv-17 \
             spirv-tools \
-            libllvmspirvlib-17-dev \
+            libllvmspirvlib-19-dev \
             bindgen \
             meson-1.5 \
             ninja-build \
