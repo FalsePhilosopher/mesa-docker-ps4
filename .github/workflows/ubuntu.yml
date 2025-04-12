@@ -171,13 +171,21 @@ jobs:
       - name: Upload mesa-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.LATEST_TAG }}-build64.tzst
+          name: ${{ env.LATEST_TAG }}-build64-PS4.tzst
           path: ${{ env.LATEST_TAG }}-build64.tzst
 
-      - name: Create .deb
+      - name: Create DEBIAN/control file
         working-directory: ./mesa
         run: |
-          dpkg-deb --build build64 ${{ env.LATEST_TAG }}.deb
+          mkdir -p build64/DEBIAN
+          cat <<EOF > build64/DEBIAN/control
+          Package: mesa
+          Version: ${{ env.LATEST_TAG }}
+          Architecture: amd64
+          Maintainer: Your Name <youremail@example.com>
+          Description: Mesa graphics library
+          EOF
+          dpkg-deb --build build64 ${{ env.LATEST_TAG }}-PS4.deb
 
       - name: Upload mesa.deb as artifact
         uses: actions/upload-artifact@v4
