@@ -6,7 +6,7 @@ on:
 jobs:
   build-and-cache-spirv:
     runs-on: ubuntu-latest
-    name: Build and Cache SPIRV-Tools
+    name: Build/cache SPIRV-Tools & cache Mesa
 
     steps:
       - name: Cache SPIRV-Tools
@@ -63,6 +63,13 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v4
+
+      - name: Fetch latest Mesa release tag
+        id: fetch-latest-release
+        run: |
+          latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+
       
       - name: Cache APT packages
         uses: actions/cache@v4
