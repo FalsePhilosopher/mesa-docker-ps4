@@ -95,6 +95,7 @@ jobs:
             libclang-cpp19 \
             libudev-dev \
             libvdpau1 \
+            libunwind-19-dev \
             llvm-17-dev \
             llvm-spirv-17 \
             spirv-tools \
