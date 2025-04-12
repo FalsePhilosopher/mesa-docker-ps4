@@ -61,6 +61,16 @@ jobs:
             automake \
             libtool
 
+      - name: build spirv-tools
+        run: |
+          git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
+          cd SPIRV-Tools
+          python3 utils/git-sync-deps
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release
+          make -j$(nproc)
+          sudo make install
+
       - name: Clone Mesa
         run: |
           git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
