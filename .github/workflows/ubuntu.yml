@@ -172,7 +172,7 @@ jobs:
       - name: Compress build64 directory
         working-directory: ./mesa/build64
         run: |
-          rm -rf src meson-info meson-logs meson-private meson-uninstalled build.ninja compile_commands.json rust-project.json bin/mesa-overlay-control.py bin/mesa-screenshot-control.py
+          rm -rf src subprojects meson-info meson-logs meson-private meson-uninstalled build.ninja compile_commands.json rust-project.json bin/mesa-overlay-control.py bin/mesa-screenshot-control.py
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build64-PS4.tzst *
 
       - name: Upload mesa-build64.tar.zst as artifact
