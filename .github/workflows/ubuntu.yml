@@ -185,7 +185,7 @@ jobs:
         run: |
           mkdir -p build64/DEBIAN
           cat <<EOF > build64/DEBIAN/control
-          Package: mesa
+          Package: ${{ env.LATEST_TAG }}
           Version: 42069-${{ env.LATEST_TAG }}-PS4
           Architecture: amd64
           Maintainer: Your Name <youremail@example.com>
