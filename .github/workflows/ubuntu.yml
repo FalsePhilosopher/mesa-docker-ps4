@@ -170,9 +170,10 @@ jobs:
           ninja -C build64 install
 
       - name: Compress build64 directory
-        working-directory: ./mesa
+        working-directory: ./mesa/build64
         run: |
-          tar -I 'zstd -19 -T0' -cf ../${{ env.LATEST_TAG }}-build64-PS4.tzst build64
+          rm -rf src meson-info meson-logs meson-private meson-uninstalled
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build64-PS4.tzst *
 
       - name: Upload mesa-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
@@ -190,7 +191,6 @@ jobs:
           Architecture: amd64
           Maintainer: Your Name <youremail@example.com>
           Description: Mesa graphics library for PS4
-          Depends: 'libdrm' 'libxxf86vm' 'libxdamage' 'libxshmfence' 'libelf' 'libomxil-bellagio' 'libunwind' 'libglvnd' 'wayland' 'lm_sensors' 'libclc' 'vulkan-icd-loader' 'zstd' 'expat'
           Provides: 'mesa' 'opencl-mesa' 'vulkan-radeon' 'vulkan-mesa-layer' 'libva-mesa-driver' 'mesa-vdpau' 'vulkan-swrast' 'vulkan-driver' 'opengl-driver' 'opencl-driver'
           Conflicts: 'mesa' 'opencl-mesa' 'vulkan-radeon' 'vulkan-mesa-layer' 'libva-mesa-driver' 'mesa-vdpau' 'vulkan-swrast'
           EOF
