@@ -260,6 +260,13 @@ jobs:
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build64-PS4.tzst *
 
+      - name: Upload mesa-build64.tar.zst as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LATESTDRM_TAG }}-build64-PS4.tzst
+          path: ${{ env.LATESTDRM_TAG }}-build64-PS4.tzst
+
+
       - name: Create control file/DEB
         working-directory: ./libdrm
         run: |
@@ -273,7 +280,7 @@ jobs:
           EOF
           dpkg-deb --build package-root ../${{ env.LATESTDRM_TAG }}-PS4.deb
 
-      - name: Upload mesa.deb as artifact
+      - name: Upload libdrm.deb as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATESTDRM_TAG }}-PS4.deb
