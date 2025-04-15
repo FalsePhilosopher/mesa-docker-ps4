@@ -261,7 +261,7 @@ jobs:
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build64-PS4.tzst *
 
-      - name: Upload mesa-build64.tar.zst as artifact
+      - name: Upload libdrm-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATESTDRM_TAG }}-build64-PS4.tzst
@@ -329,7 +329,7 @@ jobs:
           EOF
           dpkg-deb --build package-root ../${{ env.LATESTXF86_TAG }}-PS4.deb
 
-      - name: Upload mesa.deb as artifact
+      - name: Upload xf86-video-amdgpu.deb as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATESTXF86_TAG }}-PS4.deb
