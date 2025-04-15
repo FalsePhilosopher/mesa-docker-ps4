@@ -137,6 +137,7 @@ jobs:
             libllvmspirvlib-19-dev \
             bindgen \
             meson-1.5 \
+            xutils-dev \
             ninja-build \
             python3-pip \
             python3-setuptools \
@@ -295,9 +296,9 @@ jobs:
         working-directory: ./xf86-video-amdgpu
         run: | 
           mkdir build64
-          printf "export CFLAGS=${CFLAGS/-fno-plt}
-          export CXXFLAGS=${CXXFLAGS/-fno-plt}
-          export LDFLAGS=${LDFLAGS/,-z,now}" | tee ~/.bashrc
+          echo "CFLAGS=${CFLAGS/-fno-plt/}" >> $GITHUB_ENV
+          echo "CXXFLAGS=${CXXFLAGS/-fno-plt/}" >> $GITHUB_ENV
+          echo "LDFLAGS=${LDFLAGS/,-z,now/}" >> $GITHUB_ENV
           source ~/.bashrc
           ./autogen.sh
           ./configure --prefix=/usr --enable-glamor
@@ -309,6 +310,12 @@ jobs:
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTXF86_TAG }}-build64-PS4.tzst *
 
+      - name: Upload mesa-build64.tar.zst as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LATESTXF86_TAG }}-build64-PS4.tzst
+          path: ${{ env.LATESTXF86_TAG }}-build64-PS4.tzst
+
       - name: Create control file/DEB
         working-directory: ./xf86-video-amdgpu
         run: |
@@ -318,7 +325,7 @@ jobs:
           Version: 42069-${{ env.LATESTXF86_TAG }}-PS4
           Architecture: amd64
           Maintainer: Your Name <youremail@example.com>
-          Description: libdrm for PS4
+          Description: xf86-video-amdgpu for PS4
           EOF
           dpkg-deb --build package-root ../${{ env.LATESTXF86_TAG }}-PS4.deb
 
