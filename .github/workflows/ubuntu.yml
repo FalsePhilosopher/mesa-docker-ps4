@@ -191,7 +191,7 @@ jobs:
           Maintainer: Your Name <youremail@example.com>
           Description: Mesa graphics library for PS4
           EOF
-          dpkg-deb --build package-root ../../${{ env.LATEST_TAG }}-PS4.deb
+          dpkg-deb --build package-root ../${{ env.LATEST_TAG }}-PS4.deb
 
       - name: Upload mesa.deb as artifact
         uses: actions/upload-artifact@v4
