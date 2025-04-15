@@ -169,10 +169,9 @@ jobs:
           ninja -C build64
           DESTDIR="$PWD/package-root" ninja -C build64 install
 
-      - name: Compress build64 directory
-        working-directory: ./mesa/build64
+      - name: Compress install directory
+        working-directory: ./mesa/package-root
         run: |
-          rm -rf src subprojects meson-info meson-logs meson-private meson-uninstalled build.ninja compile_commands.json rust-project.json bin/mesa-overlay-control.py bin/mesa-screenshot-control.py
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build64-PS4.tzst *
 
       - name: Upload mesa-build64.tar.zst as artifact
@@ -181,7 +180,7 @@ jobs:
           name: ${{ env.LATEST_TAG }}-build64-PS4.tzst
           path: ${{ env.LATEST_TAG }}-build64-PS4.tzst
 
-      - name: Create DEBIAN/control file
+      - name: Create control file/DEB
         working-directory: ./mesa/package-root
         run: |
           mkdir -p DEBIAN
@@ -192,7 +191,7 @@ jobs:
           Maintainer: Your Name <youremail@example.com>
           Description: Mesa graphics library for PS4
           EOF
-          dpkg-deb --build build64 ../${{ env.LATEST_TAG }}-PS4.deb
+          dpkg-deb --build package-root ../../${{ env.LATEST_TAG }}-PS4.deb
 
       - name: Upload mesa.deb as artifact
         uses: actions/upload-artifact@v4
