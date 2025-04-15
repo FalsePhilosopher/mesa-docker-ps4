@@ -35,9 +35,9 @@ jobs:
         run: |
           latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
-          latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/839/repository/tags" | jq -r '.[0].name')
+          latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/177/repository/tags" | jq -r '.[0].name')
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
-          latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/166/repository/tags" | jq -r '.[0].name')
+          latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/593/repository/tags" | jq -r '.[0].name')
           echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
 
 
