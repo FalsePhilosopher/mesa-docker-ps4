@@ -6,7 +6,7 @@ on:
 jobs:
   build-and-cache-spirv:
     runs-on: ubuntu-latest
-    name: Build/cache SPIRV-Tools & cache Mesa
+    name: Build/cache SPIRV-Tools & cache Mesa,libdrm, xf86
 
     steps:
       - name: Cache SPIRV-Tools
@@ -30,16 +30,16 @@ jobs:
           make -j$(nproc)
           make install
 
-      - name: Verify SPIRV-Tools install
-        run: |
-          find ~/spirv-tools-install
-          ls ~/spirv-tools-install/bin
-
-      - name: Fetch latest Mesa release tag
+      - name: Fetch latest release tags
         id: fetch-latest-release
         run: |
           latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/839/repository/tags" | jq -r '.[0].name')
+          echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
+          latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/166/repository/tags" | jq -r '.[0].name')
+          echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
+
 
       - name: Cache Mesa repository
         id: cache-mesa
@@ -51,9 +51,32 @@ jobs:
       - name: Clone Mesa repository if not cached
         if: steps.cache-mesa.outputs.cache-hit != 'true'
         run: |
-          git clone --recursive https://gitlab.freedesktop.org/mesa/mesa.git
-          cd mesa
-          git checkout $LATEST_TAG
+          git clone --branch $LATEST_TAG --single-branch --recursive https://gitlab.freedesktop.org/mesa/mesa.git
+
+      - name: Cache libdrm repository
+        id: cache-libdrm
+        uses: actions/cache@v4
+        with:
+          path: ./libdrm
+          key: ${{ env.LATESTDRM_TAG }}
+
+      - name: Clone libdrm repository if not cached
+        if: steps.cache-libdrm.outputs.cache-hit != 'true'
+        run: |
+          git clone --branch $LATESTDRM_TAG --single-branch --recursive https://gitlab.freedesktop.org/mesa/libdrm.git
+
+      - name: Cache xf86 repository
+        id: cache-xf86
+        uses: actions/cache@v4
+        with:
+          path: ./xf86-video-amdgpu
+          key: ${{ env.LATESTXF86_TAG }}
+
+      - name: Clone xf86-video-amdgpu repository if not cached
+        if: steps.cache-xf86.outputs.cache-hit != 'true'
+        run: |
+          git clone --branch $LATESTXF86_TAG --single-branch --recursive https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
+
 
   build-mesa-ps4:
     needs: build-and-cache-spirv
@@ -64,13 +87,16 @@ jobs:
       - name: Checkout the repository
         uses: actions/checkout@v4
 
-      - name: Fetch latest Mesa release tag
+      - name: Fetch latest release tags
         id: fetch-latest-release
         run: |
           latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/839/repository/tags" | jq -r '.[0].name')
+          echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
+          latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/166/repository/tags" | jq -r '.[0].name')
+          echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
 
-      
       - name: Cache APT packages
         uses: actions/cache@v4
         with:
@@ -148,12 +174,26 @@ jobs:
           path: ./mesa
           key: ${{ env.LATEST_TAG }}
 
+      - name: Restore libdrm repository cache
+        id: restore-libdrm
+        uses: actions/cache@v4
+        with:
+          path: ./libdrm
+          key: ${{ env.LATESTDRM_TAG }}
+
+      - name: Restore xf86 repository cache
+        id: restore-xf86
+        uses: actions/cache@v4
+        with:
+          path: ./xf86-video-amdgpu
+          key: ${{ env.LATESTXF86_TAG }}
+
       - name: Copy patches
         working-directory: ./patches
         run: |
           cp mesa.patch ../mesa
-          cp libdrm.patch ../mesa/libdrm
-          cp xf86-video-amdgpu.patch ../mesa
+          cp libdrm.patch ../libdrm
+          cp xf86-video-amdgpu.patch ../xf86-video-amdgpu
 
       - name: Patch Mesa
         working-directory: ./mesa
@@ -198,13 +238,84 @@ jobs:
         with:
           name: ${{ env.LATEST_TAG }}-PS4.deb
           path: ${{ env.LATEST_TAG }}-PS4.deb
+
+      - name: Patch libdrm
+        working-directory: ./libdrm
+        run: | 
+          patch  -Np1 < libdrm.patch
+
+      - name: build libdrm
+        working-directory: ./libdrm
+        run: | 
+          mkdir build64
+          meson setup build64 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -D valgrind=disabled -D intel=enabled
+          meson configure build64
+          ninja -C build64
+          DESTDIR="$PWD/package-root" ninja -C build64 install
+
+      - name: Compress install directory
+        working-directory: ./libdrm/package-root
+        run: |
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build64-PS4.tzst *
+
+      - name: Create control file/DEB
+        working-directory: ./libdrm
+        run: |
+          mkdir -p package-root/DEBIAN
+          cat <<EOF > package-root/DEBIAN/control
+          Package: ${{ env.LATESTDRM_TAG }}
+          Version: 42069-${{ env.LATESTDRM_TAG }}-PS4
+          Architecture: amd64
+          Maintainer: Your Name <youremail@example.com>
+          Description: libdrm for PS4
+          EOF
+          dpkg-deb --build package-root ../${{ env.LATESTDRM_TAG }}-PS4.deb
+
+      - name: Upload mesa.deb as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LATESTDRM_TAG }}-PS4.deb
+          path: ${{ env.LATESTDRM_TAG }}-PS4.deb
+
+      - name: Patch xf86
+        working-directory: ./xf86-video-amdgpu
+        run: | 
+          patch  -Np1 < xf86-video-amdgpu.patch
+
+      - name: build xf86
+        working-directory: ./xf86-video-amdgpu
+        run: | 
+          mkdir build64
+          printf "export CFLAGS=${CFLAGS/-fno-plt}
+          export CXXFLAGS=${CXXFLAGS/-fno-plt}
+          export LDFLAGS=${LDFLAGS/,-z,now}" | tee ~/.bashrc
+          source ~/.bashrc
+          ./autogen.sh
+          ./configure --prefix=/usr --enable-glamor
+          make -j$(nproc)
+          make DESTDIR="$PWD/package-root" install
+
+      - name: Compress install directory
+        working-directory: ./xf86-video-amdgpu/package-root
+        run: |
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTXF86_TAG }}-build64-PS4.tzst *
+
+      - name: Create control file/DEB
+        working-directory: ./xf86-video-amdgpu
+        run: |
+          mkdir -p package-root/DEBIAN
+          cat <<EOF > package-root/DEBIAN/control
+          Package: ${{ env.LATESTXF86_TAG }}
+          Version: 42069-${{ env.LATESTXF86_TAG }}-PS4
+          Architecture: amd64
+          Maintainer: Your Name <youremail@example.com>
+          Description: libdrm for PS4
+          EOF
+          dpkg-deb --build package-root ../${{ env.LATESTXF86_TAG }}-PS4.deb
+
+      - name: Upload mesa.deb as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LATESTXF86_TAG }}-PS4.deb
+          path: ${{ env.LATESTXF86_TAG }}-PS4.deb      
           
-      # Step 7: Build xf86-video-amdgpu for PS4
-      #- name: Build xf86-video-amdgpu
-       # run: |
-        #  patch  -Np1 < ../patches/xf86-video-amdgpu.patch
-         # cd xf86-video-amdgpu
-          #./autogen.sh --prefix=/usr
-          #make
-          #sudo make install
-          #cd ../..
