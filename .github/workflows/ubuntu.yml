@@ -51,7 +51,8 @@ jobs:
       - name: Clone Mesa repository if not cached
         if: steps.cache-mesa.outputs.cache-hit != 'true'
         run: |
-          git clone --branch $LATEST_TAG --single-branch --recursive https://gitlab.freedesktop.org/mesa/mesa.git
+          curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/${{ env.LATEST_TAG }}/${{ env.LATEST_TAG }}.tar.gz" | tar -xzvf -
+          mv mesa-* mesa
 
       - name: Cache libdrm repository
         id: cache-libdrm
@@ -76,8 +77,8 @@ jobs:
       - name: Clone xf86-video-amdgpu repository if not cached
         if: steps.cache-xf86.outputs.cache-hit != 'true'
         run: |
-          git clone --branch $LATESTXF86_TAG --single-branch --recursive https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu.git
-
+          curl -L "https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/archive/${{ env.LATESTXF86_TAG }}/xf86-video-amdgpu-${{ env.LATESTXF86_TAG }}.tar.gz" | tar -xzvf -
+          mv xf86-* xf86-video-amdgpu
 
   build-mesa-ps4:
     needs: build-and-cache-spirv
