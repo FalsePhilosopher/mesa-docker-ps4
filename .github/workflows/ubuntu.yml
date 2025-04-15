@@ -63,8 +63,9 @@ jobs:
       - name: Clone libdrm repository if not cached
         if: steps.cache-libdrm.outputs.cache-hit != 'true'
         run: |
-          git clone --branch $LATESTDRM_TAG --single-branch --recursive https://gitlab.freedesktop.org/mesa/libdrm.git
-
+         curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf -
+         mv drm-${{ env.LATESTDRM_TAG }} libdrm
+          
       - name: Cache xf86 repository
         id: cache-xf86
         uses: actions/cache@v4
