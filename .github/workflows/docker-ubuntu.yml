@@ -1,28 +1,202 @@
-name: Docker Build Ubuntu
+name: Build Mesa on Ubuntu
 
 on:
   workflow_dispatch:
+
+jobs:
+  build-and-cache-spirv:
+    runs-on: ubuntu-latest
+    name: Build/cache SPIRV-Tools & cache Mesa/libdrm
+
+    steps:
+      - name: Cache SPIRV-Tools
+        id: cache-spirv-32
+        uses: actions/cache@v4
+        with:
+          path: ~/spirv-tools-install
+          key: spirv-tools-32
+
+      - name: Build SPIRV-Tools if not cached
+        if: steps.cache-spirv-32.outputs.cache-hit != 'true'
+        run: |
+          sudo apt update
+          sudo apt install -y cmake python3 git g++ pkg-config
+
+          git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
+          cd SPIRV-Tools
+          python3 utils/git-sync-deps
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
+          make -j$(nproc)
+          make install
+
+      - name: Fetch latest release tags
+        id: fetch-latest-release
+        run: |
+          latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/177/repository/tags" | jq -r '.[0].name')
+          echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
+
+
+      - name: Cache Mesa repository
+        id: cache-mesa
+        uses: actions/cache@v4
+        with:
+          path: ./mesa
+          key: ${{ env.LATEST_TAG }}
+
+      - name: Clone Mesa repository if not cached
+        if: steps.cache-mesa.outputs.cache-hit != 'true'
+        run: |
+          curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/${{ env.LATEST_TAG }}/${{ env.LATEST_TAG }}.tar.gz" | tar -xzvf -
+          mv mesa-* mesa
+
+      - name: Cache libdrm repository
+        id: cache-libdrm
+        uses: actions/cache@v4
+        with:
+          path: ./libdrm
+          key: ${{ env.LATESTDRM_TAG }}
+
+      - name: Clone libdrm repository if not cached
+        if: steps.cache-libdrm.outputs.cache-hit != 'true'
+        run: |
+         curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf -
+         mv drm-${{ env.LATESTDRM_TAG }} libdrm
 
 jobs:
   build-and-test:
     name: Build and Test Docker Containers
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        os: [ubuntu-latest, fedora-latest, archlinux-latest]
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
+        
+      - name: Fetch latest release tags
+        id: fetch-latest-release
+        run: |
+          latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
+          echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
+          latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/177/repository/tags" | jq -r '.[0].name')
+          echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
+          
+      - name: Restore SPIRV-Tools cache
+        uses: actions/cache@v4
+        with:
+          path: ~/spirv-tools-install
+          key: spirv-tools-32
+   
+      - name: Restore Mesa repository cache
+        id: restore-mesa
+        uses: actions/cache@v4
+        with:
+          path: ./mesa
+          key: ${{ env.LATEST_TAG }}
 
+      - name: Restore libdrm repository cache
+        id: restore-libdrm
+        uses: actions/cache@v4
+        with:
+          path: ./libdrm
+          key: ${{ env.LATESTDRM_TAG }}
+
+      - name: Copy patches
+        working-directory: ./patches
+        run: |
+          cp mesa32.patch ../mesa
+          cp libdrm32.patch ../libdrm
+
+      - name: Patch Mesa
+        working-directory: ./mesa
+        run: |
+          patch  -Np1 < mesa32.patch
+          
+      - name: Patch libdrm
+        working-directory: ./libdrm
+        run: | 
+          patch  -Np1 < libdrm32.patch
+          
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v2
+        uses: docker/setup-buildx-action@v3
 
-      - name: Build Docker Image for ${{ matrix.os }}
-        run: |
-          docker build -f Dockerfile.${{ matrix.os }} -t mesa-ps4-${{ matrix.os }} .
+      - name: Build Mesa in 32-bit Docker container
+      run: |
+        docker build --platform linux/386 -t mesa-32 .
 
-      - name: Run Container for ${{ matrix.os }}
+    - name: Run Mesa in 32-bit Docker container
+      run: |
+        docker run -v mesa:~/mesa -v spirv-tools-install:~/spirv-tools-install mesa-32
+        
+    - name: Copy build files from container
+      run: |
+        mkdir -p mesa32/package-root
+        docker cp mesa-32:~/mesa/package-root mesa32/package-root
+        
+    - name: Compress install directory
+        working-directory: ./mesa32/package-root
         run: |
-          docker run --rm mesa-ps4-${{ matrix.os }} /mesa/build_mesa.sh
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build32-PS4.tzst *
+
+    - name: Upload mesa-build64.tar.zst as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LATEST_TAG }}-build32-PS4.tzst
+          path: ${{ env.LATEST_TAG }}-build32-PS4.tzst
+
+      - name: Create control file/DEB
+        working-directory: ./mesa32
+        run: |
+          mkdir -p package-root/DEBIAN
+          cat <<EOF > package-root/DEBIAN/control
+          Package: lib32-${{ env.LATEST_TAG }}
+          Version: 42069-${{ env.LATEST_TAG }}-PS4
+          Architecture: amd64
+          Maintainer: Your Name <youremail@example.com>
+          Description: Mesa graphics library for PS4 32 bit parts
+          EOF
+          dpkg-deb --build package-root ../lib32${{ env.LATEST_TAG }}-PS4.deb
+
+      - name: Upload mesa.deb as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib32${{ env.LATEST_TAG }}-PS4.deb
+          path: lib32${{ env.LATEST_TAG }}-PS4.deb
+          
+      - name: Copy build files from container
+      run: |
+        mkdir -p drm32/package-root
+        docker cp mesa-32:~/libdrm/package-root drm32/package-root
+        docker rm mesa-32
+        
+       - name: Compress install directory
+        working-directory: .drm32/package-root
+        run: |
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build32-PS4.tzst *
+
+      - name: Upload libdrm-build32.tar.zst as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.LATESTDRM_TAG }}-build32-PS4.tzst
+          path: ${{ env.LATESTDRM_TAG }}-build32-PS4.tzst
+
+
+      - name: Create control file/DEB
+        working-directory: ./drm32
+        run: |
+          mkdir -p package-root/DEBIAN
+          cat <<EOF > package-root/DEBIAN/control
+          Package: ${{ env.LATESTDRM_TAG }}
+          Version: 42069-${{ env.LATESTDRM_TAG }}-PS4
+          Architecture: amd64
+          Maintainer: Your Name <youremail@example.com>
+          Description: libdrm for PS4
+          EOF
+          dpkg-deb --build package-root ../lib32${{ env.LATESTDRM_TAG }}-PS4.deb
+
+      - name: Upload libdrm.deb as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: lib32${{ env.LATESTDRM_TAG }}-PS4.deb
+          path: lib32${{ env.LATESTDRM_TAG }}-PS4.deb
