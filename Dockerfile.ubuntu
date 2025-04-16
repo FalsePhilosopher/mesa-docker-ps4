@@ -47,12 +47,20 @@ RUN source /etc/os-release
     libpciaccess-dev \
     autoconf \
     automake \
-    libtool
+    libtool \
+    cmake \
+    git \
+    g++ \
+    pkg-config \
     zstd
     
-RUN export PATH="spirv-tools-install/bin:$PATH"
-    export CMAKE_PREFIX_PATH="spirv-tools-install"
-    export PKG_CONFIG_PATH="spirv-tools-install/lib/pkgconfig:$PKG_CONFIG_PATH"
+RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
+    cd SPIRV-Tools
+    python3 utils/git-sync-deps
+    mkdir build && cd build
+    cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
+    make -j$(nproc)
+    make install
 
 WORKDIR ~/mesa
 
@@ -62,7 +70,7 @@ RUN mkdir build32
     ninja -C build32
     DESTDIR="$PWD/package-root" ninja -C build32 install
     
-WORKDIr ~/libdrm
+WORKDIR ~/libdrm
 
 RUN mkdir build32
     meson setup build32 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -D valgrind=disabled -D intel=enabled

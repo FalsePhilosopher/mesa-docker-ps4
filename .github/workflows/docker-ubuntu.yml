@@ -4,32 +4,11 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-cache-spirv:
+  cache-mesa:
     runs-on: ubuntu-latest
     name: Build/cache SPIRV-Tools & cache Mesa/libdrm
 
     steps:
-      - name: Cache SPIRV-Tools
-        id: cache-spirv-32
-        uses: actions/cache@v4
-        with:
-          path: ~/spirv-tools-install
-          key: spirv-tools-32
-
-      - name: Build SPIRV-Tools if not cached
-        if: steps.cache-spirv-32.outputs.cache-hit != 'true'
-        run: |
-          sudo apt update
-          sudo apt install -y cmake python3 git g++ pkg-config
-
-          git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
-          cd SPIRV-Tools
-          python3 utils/git-sync-deps
-          mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
-          make -j$(nproc)
-          make install
-
       - name: Fetch latest release tags
         id: fetch-latest-release
         run: |
@@ -66,7 +45,7 @@ jobs:
          mv drm-${{ env.LATESTDRM_TAG }} libdrm
 
   build-lib32mesa-ps4:
-    needs: build-and-cache-spirv
+    needs: cache-mesa
     runs-on: ubuntu-latest
     name: Build Mesa and Components for PS4
 
@@ -89,13 +68,7 @@ jobs:
           echo "LATEST_TAG=$latest_tag" >> $GITHUB_ENV
           latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/177/repository/tags" | jq -r '.[0].name')
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
-          
-      - name: Restore SPIRV-Tools cache
-        uses: actions/cache@v4
-        with:
-          path: ~/spirv-tools-install
-          key: spirv-tools-32
-   
+
       - name: Restore Mesa repository cache
         id: restore-mesa
         uses: actions/cache@v4
@@ -113,18 +86,18 @@ jobs:
       - name: Copy patches
         working-directory: ./patches
         run: |
-          cp mesa32.patch ../mesa
-          cp libdrm32.patch ../libdrm
+          cp mesa.patch ../mesa
+          cp libdrm.patch ../libdrm
 
       - name: Patch Mesa
         working-directory: ./mesa
         run: |
-          patch  -Np1 < mesa32.patch
+          patch  -Np1 < mesa.patch
           
       - name: Patch libdrm
         working-directory: ./libdrm
         run: | 
-          patch  -Np1 < libdrm32.patch
+          patch  -Np1 < libdrm.patch
           
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -135,7 +108,7 @@ jobs:
 
       - name: Run Mesa in 32-bit Docker container
         run: |
-          docker run -v mesa:~/mesa -v spirv-tools-install:~/spirv-tools-install mesa-32
+          docker run -v mesa:~/mesa -v libdrm:~/libdrm mesa-32
         
       - name: Copy build files from container
         run: |
