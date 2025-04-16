@@ -104,7 +104,7 @@ jobs:
 
       - name: Build Mesa in 32-bit Docker container
         run: |
-          docker build --platform linux/386 -t mesa-32 .
+          docker build --platform linux/386 -t mesa-32 -f Dockerfile.mesa32 .
 
       - name: Run Mesa in 32-bit Docker container
         run: |
