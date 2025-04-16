@@ -1,5 +1,5 @@
 # Base image
-FROM i386/ubuntu:24.04
+FROM i386/ubuntu:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
