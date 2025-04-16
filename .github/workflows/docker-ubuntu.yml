@@ -1,4 +1,4 @@
-name: Build Mesa on Ubuntu
+name: Build lib32Mesa on Ubuntu docker
 
 on:
   workflow_dispatch:
@@ -65,7 +65,7 @@ jobs:
          curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf -
          mv drm-${{ env.LATESTDRM_TAG }} libdrm
 
-jobs:
+  jobs:
   build-and-test:
     name: Build and Test Docker Containers
     runs-on: ubuntu-latest
@@ -122,24 +122,24 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build Mesa in 32-bit Docker container
-      run: |
-        docker build --platform linux/386 -t mesa-32 .
+        run: |
+          docker build --platform linux/386 -t mesa-32 .
 
-    - name: Run Mesa in 32-bit Docker container
-      run: |
-        docker run -v mesa:~/mesa -v spirv-tools-install:~/spirv-tools-install mesa-32
+      - name: Run Mesa in 32-bit Docker container
+        run: |
+          docker run -v mesa:~/mesa -v spirv-tools-install:~/spirv-tools-install mesa-32
         
-    - name: Copy build files from container
-      run: |
-        mkdir -p mesa32/package-root
-        docker cp mesa-32:~/mesa/package-root mesa32/package-root
+      - name: Copy build files from container
+        run: |
+          mkdir -p mesa32/package-root
+          docker cp mesa-32:~/mesa/package-root mesa32/package-root
         
-    - name: Compress install directory
+      - name: Compress install directory
         working-directory: ./mesa32/package-root
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build32-PS4.tzst *
 
-    - name: Upload mesa-build64.tar.zst as artifact
+      - name: Upload mesa-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATEST_TAG }}-build32-PS4.tzst
@@ -165,12 +165,12 @@ jobs:
           path: lib32${{ env.LATEST_TAG }}-PS4.deb
           
       - name: Copy build files from container
-      run: |
-        mkdir -p drm32/package-root
-        docker cp mesa-32:~/libdrm/package-root drm32/package-root
-        docker rm mesa-32
+        run: |
+          mkdir -p drm32/package-root
+          docker cp mesa-32:~/libdrm/package-root drm32/package-root
+          docker rm mesa-32
         
-       - name: Compress install directory
+      - name: Compress install directory
         working-directory: .drm32/package-root
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build32-PS4.tzst *
