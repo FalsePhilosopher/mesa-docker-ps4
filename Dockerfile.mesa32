@@ -3,9 +3,9 @@ FROM i386/debian:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN sudo apt update && \
-    sudo apt build-dep mesa -y && \
-    sudo apt install -y \
+RUN apt update && \
+        apt build-dep mesa -y && \
+        apt install -y \
         git \
         build-essential \
         glslang-tools \
