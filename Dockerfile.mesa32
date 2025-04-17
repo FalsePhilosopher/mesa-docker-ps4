@@ -27,7 +27,7 @@ RUN apt build-dep mesa -y && \
         clang-tools-17 \
         libclang-17-dev \
         llvm-17-dev \
-        libclc-dev \
+        libclc-19-dev \
         libclang-cpp19 \
         libudev-dev \
         libvdpau1 \
