@@ -3,9 +3,14 @@ FROM i386/debian:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN sed -i 's/^# deb-src/deb-src/' /etc/apt/sources.list && \
-        apt update && \
-        apt build-dep mesa -y && \
+RUN echo "deb http://deb.debian.org/debian $(lsb_release -sc) main contrib non-free" > /etc/apt/sources.list && \
+    echo "deb-src http://deb.debian.org/debian $(lsb_release -sc) main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb http://deb.debian.org/debian $(lsb_release -sc)-updates main contrib non-free" >> /etc/apt/sources.list && \
+    echo "deb-src http://deb.debian.org/debian $(lsb_release -sc)-updates main contrib non-free" >> /etc/apt/sources.list && \
+    apt update
+
+
+RUN apt build-dep mesa -y && \
         apt install -y \
         git \
         build-essential \
