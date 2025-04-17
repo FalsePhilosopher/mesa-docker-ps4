@@ -1,5 +1,5 @@
 # Base image
-FROM i386/debian:latest
+FROM i386/debian:trixie
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -32,11 +32,9 @@ RUN apt build-dep mesa -y && \
         libudev-dev \
         libvdpau1 \
         libunwind-dev \
-        llvm-spirv-17 \
-        spirv-tools \
         libllvmspirvlib-19-dev \
         bindgen \
-        meson-1.5 \
+        meson \
         xutils-dev \
         ninja-build \
         python3-pip \
