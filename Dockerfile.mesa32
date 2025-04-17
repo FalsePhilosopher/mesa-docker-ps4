@@ -3,6 +3,9 @@ FROM i386/debian:trixie
 
 ENV DEBIAN_FRONTEND=noninteractive
 
+COPY mesa ~/mesa
+COPY libdrm ~/libdrm
+
 RUN echo "deb-src http://deb.debian.org/debian trixie main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
     echo "deb-src http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
     echo "deb-src http://deb.debian.org/debian trixie-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
@@ -65,7 +68,6 @@ RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
     make -j$(nproc) && \
     make install
 
-# Set up build directory for mesa
 WORKDIR ~/mesa
 
 RUN mkdir build32 && \
