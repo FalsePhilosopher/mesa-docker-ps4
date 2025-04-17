@@ -104,11 +104,11 @@ jobs:
 
       - name: Build Mesa in 32-bit Docker container
         run: |
-          docker build --platform linux/386 -t mesa-32 -f Dockerfile.mesa32 .
+          docker build --platform linux/386 -v mesa:~/mesa -v libdrm:~/libdrm -t mesa-32 -f Dockerfile.mesa32 .
 
       - name: Run Mesa in 32-bit Docker container
         run: |
-          docker run -v mesa:~/mesa -v libdrm:~/libdrm mesa-32
+          docker run mesa-32
         
       - name: Copy build files from container
         run: |
