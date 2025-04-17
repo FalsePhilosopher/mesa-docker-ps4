@@ -3,11 +3,7 @@ FROM i386/debian:latest
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN . /etc/os-release && \
-    echo "deb-src http://azure.archive.ubuntu.com/ubuntu $VERSION_CODENAME main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb-src http://azure.archive.ubuntu.com/ubuntu $VERSION_CODENAME-updates main restricted universe multiverse" >> /etc/apt/sources.list && \
-    echo "deb-src http://security.ubuntu.com/ubuntu $VERSION_CODENAME-security main restricted universe multiverse" >> /etc/apt/sources.list && \
-    apt update && \
+RUN apt update && \
     apt build-dep mesa -y && \
     apt install -y \
         git \
