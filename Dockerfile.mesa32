@@ -59,12 +59,12 @@ RUN apt build-dep mesa -y && \
 RUN mkdir -p spirv-tools-32 && \
     cd spirv-tools-32 && \
     if [ ! -d build ]; then
-    git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive . 
-    git submodule update --init
-    python3 utils/git-sync-deps
-    mkdir build && cd build
-    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
-    make -j$(nproc)
+    RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive . && \
+    git submodule update --init && \
+    python3 utils/git-sync-deps && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
     make install
     else
     echo "Using cached SPIRV-Tools build"
