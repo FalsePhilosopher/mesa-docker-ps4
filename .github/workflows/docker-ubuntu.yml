@@ -134,7 +134,7 @@ jobs:
             Maintainer: Your Name <youremail@example.com>
             Description: Mesa graphics library for PS4 32 bit parts
             EOF && \
-            dpkg-deb --build package-root ../lib32${{ env.LATEST_TAG }}-PS4.deb
+            dpkg-deb --build package-root lib32${{ env.LATEST_TAG }}-PS4.deb
             "
 
           docker run \
@@ -157,7 +157,7 @@ jobs:
               Maintainer: Your Name <youremail@example.com>
               Description: libdrm for PS4
               EOF && \
-              dpkg-deb --build package-root ../lib32${{ env.LATESTDRM_TAG }}-PS4.deb
+              dpkg-deb --build package-root lib32${{ env.LATESTDRM_TAG }}-PS4.deb
               "
         
       - name: Compress install directory
