@@ -68,7 +68,7 @@ jobs:
           latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/177/repository/tags" | jq -r '.[0].name')
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
 
-      - name: Restore Mesa repository cache
+      - name: Restore spirv-tools-32 cache
         id: restore-spirv-tools-32
         uses: actions/cache@v4
         with:
@@ -112,13 +112,8 @@ jobs:
         run: |
           docker run --platform linux/386 -v spirv-tools-32:spirv-tools-32 -v mesa:mesa -v libdrm:libdrm -t mesa-32 -f Dockerfile.mesa32 .
         
-      - name: Copy build files from container
-        run: |
-          mkdir -p mesa32/package-root
-          docker cp mesa-32:~/mesa/package-root mesa32/package-root
-        
       - name: Compress install directory
-        working-directory: ./mesa32/package-root
+        working-directory: ./mesa/package-root
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build32-PS4.tzst *
 
@@ -129,7 +124,7 @@ jobs:
           path: ${{ env.LATEST_TAG }}-build32-PS4.tzst
 
       - name: Create control file/DEB
-        working-directory: ./mesa32
+        working-directory: ./mesa
         run: |
           mkdir -p package-root/DEBIAN
           cat <<EOF > package-root/DEBIAN/control
@@ -146,15 +141,9 @@ jobs:
         with:
           name: lib32${{ env.LATEST_TAG }}-PS4.deb
           path: lib32${{ env.LATEST_TAG }}-PS4.deb
-          
-      - name: Copy build files from container
-        run: |
-          mkdir -p drm32/package-root
-          docker cp mesa-32:~/libdrm/package-root drm32/package-root
-          docker rm mesa-32
         
       - name: Compress install directory
-        working-directory: .drm32/package-root
+        working-directory: ./libdrm/package-root
         run: |
           tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build32-PS4.tzst *
 
@@ -166,7 +155,7 @@ jobs:
 
 
       - name: Create control file/DEB
-        working-directory: ./drm32
+        working-directory: ./libdrm
         run: |
           mkdir -p package-root/DEBIAN
           cat <<EOF > package-root/DEBIAN/control
