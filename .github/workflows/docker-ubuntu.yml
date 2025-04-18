@@ -108,11 +108,11 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build Mesa in 32-bit Docker container
+      - name: Build 32-bit Docker container
         run: |
           docker build -t mesa32 -f Dockerfile.mesa32 .
 
-      - name: Run Mesa/libdrm build in Docker container
+      - name: Build Mesa/libdrm in Docker container
         run: |
           docker run \
             --rm \
