@@ -68,4 +68,5 @@ RUN mkdir -p spirv-tools-32 && \
         make install; \
     else \
         echo "Using cached SPIRV-Tools build"; \
+        make install; \
     fi
