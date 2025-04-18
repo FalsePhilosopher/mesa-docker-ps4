@@ -3,9 +3,6 @@ FROM i386/debian:trixie
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY mesa ~/mesa
-COPY libdrm ~/libdrm
-
 RUN echo "deb-src http://deb.debian.org/debian trixie main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
     echo "deb-src http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
     echo "deb-src http://deb.debian.org/debian trixie-updates main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
@@ -59,16 +56,21 @@ RUN apt build-dep mesa -y && \
         pkg-config \
         zstd
 
-# Build SPIRV-Tools
-RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
-    cd SPIRV-Tools && \
-    python3 utils/git-sync-deps && \
-    mkdir build && cd build && \
-    cmake .. -DCMAKE_BUILD_TYPE=Release && \
-    make -j$(nproc) && \
+RUN mkdir -p spirv-tools-32 && \
+    cd spirv-tools-32 && \
+    if [ ! -d build ]; then
+    git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive . 
+    git submodule update --init
+    python3 utils/git-sync-deps
+    mkdir build && cd build
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release
+    make -j$(nproc)
     make install
+    else
+    echo "Using cached SPIRV-Tools build"
+    fi
 
-WORKDIR ~/mesa
+WORKDIR /mesa
 
 RUN mkdir build32 && \
     meson setup build32 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe -Dopengl=true -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=enabled -Dlmsensors=enabled -Dglx=dri -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dglvnd=enabled -Dgbm=enabled -Dlibunwind=enabled -Dosmesa=true -Dgallium-nine=true -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Dshared-glapi=enabled -Dmicrosoft-clc=disabled -Dvalgrind=disabled && \
@@ -76,8 +78,7 @@ RUN mkdir build32 && \
     ninja -C build32 && \
     DESTDIR="$PWD/package-root" ninja -C build32 install
 
-# Set up build directory for libdrm
-WORKDIR ~/libdrm
+WORKDIR /libdrm
 
 RUN mkdir build32 && \
     meson setup build32 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -Dvalgrind=disabled -Dintel=enabled && \
