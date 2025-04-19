@@ -82,7 +82,7 @@ jobs:
           path: ./libdrm
           key: ${{ env.LATESTDRM_TAG }}
 
-      - name: Cache mesa32 image
+      - name: Cache docker image
         id: cache-docker
         uses: actions/cache@v4
         with:
