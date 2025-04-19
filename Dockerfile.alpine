@@ -10,20 +10,36 @@ RUN apk update && apk add --no-cache \
     wget \
     cmake \
     make \
-    ninja \
+    meson \
+    glslang \
+    ninja-buld \
     g++ \
     clang17 \
     llvm17 \
     llvm17-dev \
     clang17-extra-tools \
     zstd \
+    libelf \
+    lua-system \
+    libvdpau \
+    libunwind \
+    spirv-llvm-translator-libs \
+    libxcb \
+    xorg-server-dev \
+    lua-etlua \
     libx11-dev \
     libxrandr-dev \
+    libdrm \
     mesa-dev \
+    mesa-gles \
     mesa-gbm \
+    mesa-egl \
     wayland-dev \
     wayland-protocols \
+    wayland-libs-egl \
     wayland-utils \
+    wayland-libs-server \
+    wayland-libs-client \
     xorg-server-dev \
     xcb-util-dev \
     python3 \
@@ -32,6 +48,7 @@ RUN apk update && apk add --no-cache \
     py3-mako \
     xorgproto \
     libtool \
+    libpciaccess \
     autoconf \
     automake \
     pkgconfig \
