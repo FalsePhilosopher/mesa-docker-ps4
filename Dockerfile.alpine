@@ -37,7 +37,7 @@ RUN apk update && apk add --no-cache \
     elfutils-dev \
     lua5.4-dev \
     libudev-zero-dev \
-    libpciaccess-dev \
+    libpciaccess-dev 
 
 RUN pip install --no-cache-dir bindgen
 
