@@ -1,0 +1,60 @@
+# Base image
+FROM i386/alpine:3.21.3
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install dependencies
+RUN apk update && apk add --no-cache \
+    git \
+    wget \
+    cmake \
+    make \
+    ninja \
+    g++ \
+    clang17 \
+    llvm17 \
+    llvm17-dev \
+    clang-tools-extra \
+    libexecinfo-dev \
+    zstd \
+    libx11-dev \
+    libxrandr-dev \
+    mesa-dev \
+    mesa-gbm \
+    wayland-dev \
+    wayland-protocols \
+    wayland-utils \
+    xorg-server-dev \
+    xcb-util-dev \
+    python3 \
+    py3-pip \
+    py3-setuptools \
+    py3-mako \
+    xorgproto \
+    libtool \
+    autoconf \
+    automake \
+    pkgconfig \
+    elfutils-dev \
+    lua5.4-dev \
+    libudev-zero-dev \
+    libpciaccess-dev \
+    spirv-tools \
+    spirv-headers \
+    spirv-cross \
+    spirv-tools-dev \
+    spirv-tools-extra \
+    spirv-headers-dev \
+    spirv-cross-dev
+
+RUN pip install --no-cache-dir bindgen
+
+RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
+    cd SPIRV-Tools && \
+    git submodule update --init && \
+    python3 utils/git-sync-deps && \
+    mkdir build && cd build && \
+    cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release && \
+    make -j$(nproc) && \
+    make install && \
+    cd ../.. && rm -rf SPIRV-Tools
