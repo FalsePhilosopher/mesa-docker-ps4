@@ -14,8 +14,7 @@ RUN apk update && apk add --no-cache \
     clang17 \
     llvm17 \
     llvm17-dev \
-    clang-tools-extra \
-    libexecinfo-dev \
+    clang17-extra-tools \
     zstd \
     libx11-dev \
     libxrandr-dev \
@@ -39,13 +38,6 @@ RUN apk update && apk add --no-cache \
     lua5.4-dev \
     libudev-zero-dev \
     libpciaccess-dev \
-    spirv-tools \
-    spirv-headers \
-    spirv-cross \
-    spirv-tools-dev \
-    spirv-tools-extra \
-    spirv-headers-dev \
-    spirv-cross-dev
 
 RUN pip install --no-cache-dir bindgen
 
