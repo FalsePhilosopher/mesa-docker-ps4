@@ -37,9 +37,8 @@ RUN apk update && apk add --no-cache \
     elfutils-dev \
     lua5.4-dev \
     libudev-zero-dev \
-    libpciaccess-dev 
-
-RUN pip install --no-cache-dir bindgen
+    libpciaccess-dev \
+    cbindgen
 
 RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
     cd SPIRV-Tools && \
