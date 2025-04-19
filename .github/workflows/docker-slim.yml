@@ -112,13 +112,13 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          gunzip -c docker.tar.gz | docker load
+          unzstd -T0 docker.zst | docker load
 
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa32 -f Dockerfile.mesa32-slim .
-          docker save mesa32 | gzip > docker.tar.gz
+          docker save mesa32 | zstd -19 -T0 > docker.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |
