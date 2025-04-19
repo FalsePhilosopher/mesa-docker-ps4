@@ -68,13 +68,6 @@ jobs:
           latestdrm_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/177/repository/tags" | jq -r '.[0].name')
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
 
-      - name: Restore spirv-tools-32 cache
-        id: restore-spirv-tools-32
-        uses: actions/cache@v4
-        with:
-          path: ./spirv-tools-32
-          key: spirv-tools-32
-
       - name: Restore Mesa repository cache
         id: restore-mesa
         uses: actions/cache@v4
@@ -88,6 +81,13 @@ jobs:
         with:
           path: ./libdrm
           key: ${{ env.LATESTDRM_TAG }}
+
+      - name: Cache mesa32 image
+        uses: actions/cache@v4
+        with:
+          path: mesa32.tar.gz
+          key: mesa32-docker
+
 
       - name: Copy patches
         working-directory: ./patches
@@ -108,9 +108,16 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build 32-bit Docker container
+      - name: Load docker image from cache
+        if: steps.cache.outputs.cache-hit == 'true'
+        run: |
+          gunzip -c mesa32.tar.gz | docker load
+
+      - name: Build 32-bit Docker container if not cached
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa32 -f Dockerfile.mesa32 .
+          docker save mesa32 | gzip > mesa32.tar.gz
 
       - name: Build Mesa/libdrm in Docker container
         run: |
