@@ -134,9 +134,8 @@ jobs:
             ninja -C build32 && \
             DESTDIR='/mesa/package-root' ninja -C build32 install && \
             mkdir -p package-root/DEBIAN && \
-            printf "Package: lib32-%s\nVersion: 42069-%s-PS4\nArchitecture: amd64\nMaintainer: Your Name <youremail@example.com>\nDescription: Mesa graphics library for PS4 32 bit parts\n" "${{ env.LATEST_TAG }}" "${{ env.LATEST_TAG }}" > package-root/DEBIAN/control && \
-            dpkg-deb --build package-root lib32${{ env.LATEST_TAG }}-PS4.deb
-            "
+            printf "Package: lib32-%s\nVersion: 42069-%s-PS4\nArchitecture: amd64\nMaintainer: Your Name \nDescription: Mesa graphics library for PS4 32 bit parts\n" "${{ env.LATEST_TAG }}" "${{ env.LATEST_TAG }}" > package-root/DEBIAN/control && \
+            dpkg-deb --build package-root lib32${{ env.LATEST_TAG }}-PS4.deb"
 
           docker run \
             --rm \
@@ -151,9 +150,8 @@ jobs:
               ninja -C build32 && \
               DESTDIR='/libdrm/package-root' ninja -C build32 install && \
               mkdir -p package-root/DEBIAN && \
-              printf "Package: %s\nVersion: 42069-%s-PS4\nArchitecture: amd64\nMaintainer: Your Name <youremail@example.com>\nDescription: libdrm for PS4\n" "${{ env.LATESTDRM_TAG }}" "${{ env.LATESTDRM_TAG }}" > package-root/DEBIAN/control && \
-              dpkg-deb --build package-root lib32${{ env.LATESTDRM_TAG }}-PS4.deb
-              "
+              printf "Package: %s\nVersion: 42069-%s-PS4\nArchitecture: amd64\nMaintainer: Your Name \nDescription: libdrm for PS4\n" "${{ env.LATESTDRM_TAG }}" "${{ env.LATESTDRM_TAG }}" > package-root/DEBIAN/control && \
+              dpkg-deb --build package-root lib32${{ env.LATESTDRM_TAG }}-PS4.deb"
         
       - name: Compress install directory
         working-directory: ./mesa/package-root
