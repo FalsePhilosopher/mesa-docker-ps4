@@ -8,7 +8,7 @@ This repository contains Docker configurations for building Mesa with patches fo
 
 ### Building the Docker Image
 1. Clone the repository:
-   ```bash
+   ```
    git clone https://github.com/FalsePhilosopher/mesa-docker-ps4.git
    cd mesa-docker-ps4
    latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/176/repository/tags" | jq -r '.[0].name')
@@ -23,12 +23,12 @@ This repository contains Docker configurations for building Mesa with patches fo
    ```
 
 2. Build the Docker image
-     ```bash
+     ```
      docker build -t mesa32 -f Dockerfile.mesa32 .
      ```
 
 3. Run the Docker image to build mesa
-   ```bash
+   ```
    docker run \
             --rm \
             --platform linux/386 \
@@ -46,7 +46,7 @@ This repository contains Docker configurations for building Mesa with patches fo
             dpkg-deb --build package-root lib32${{ env.LATEST_TAG }}-PS4.deb"
    ```
    4. Run the Docker image to build libdrm
-      ```bash
+      ```
       docker run \
             --rm \
             --platform linux/386 \
@@ -67,6 +67,6 @@ This repository contains Docker configurations for building Mesa with patches fo
               Maintainer: Your Name <youremail@example.com>
               Description: libdrm for PS4
               EOF && \
-              dpkg-deb --build package-root lib32${{ env.LATESTDRM_TAG }}-PS4.deb
-              "
+              dpkg-deb --build package-root lib32${{ env.LATESTDRM_TAG }}-PS4.deb"
       ```
+You might have to chown the files in the docker run step if you don't have access to the local docker files if you plan on automating the packaging outside of the container.
