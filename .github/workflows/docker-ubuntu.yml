@@ -86,9 +86,8 @@ jobs:
         id: cache-docker
         uses: actions/cache@v4
         with:
-          path: mesa32.zst
-          key: mesa32-docker
-
+          path: docker-full.zst
+          key: docker-full
 
       - name: Copy patches
         working-directory: ./patches
@@ -112,13 +111,13 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          unzstd mesa32.zst | docker load
-
+          zstd -d docker-full.zst -c | docker load
+          
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa32 -f Dockerfile.mesa32 .
-          docker save mesa32 | zstd > mesa32.zst
+          docker save mesa32 | zstd > docker-full.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |
