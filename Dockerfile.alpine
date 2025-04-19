@@ -12,7 +12,7 @@ RUN apk update && apk add --no-cache \
     make \
     meson \
     glslang \
-    ninja-buld \
+    ninja-build \
     g++ \
     clang17 \
     llvm17 \
