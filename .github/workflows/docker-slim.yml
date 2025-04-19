@@ -86,7 +86,7 @@ jobs:
         id: cache-docker
         uses: actions/cache@v4
         with:
-          path: docker.tar.gz
+          path: docker.zst
           key: docker-slim
 
 
