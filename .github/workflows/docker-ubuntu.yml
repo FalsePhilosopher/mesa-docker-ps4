@@ -111,13 +111,13 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          zstd -d docker-full.zst -c | docker load
+          zstd -T0 -d docker-full.zst -c | docker load
           
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa32 -f Dockerfile.mesa32 .
-          docker save mesa32 | zstd > docker-full.zst
+          docker save mesa32 | zstd -19 -T0 > docker-full.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |
