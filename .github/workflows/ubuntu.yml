@@ -1,4 +1,4 @@
-name: Build Mesa on Ubuntu
+name: Build Mesa 64
 
 on:
   workflow_dispatch:
