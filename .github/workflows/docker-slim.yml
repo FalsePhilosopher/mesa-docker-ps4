@@ -112,7 +112,7 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          unzstd -T0 docker.zst | docker load
+          zstd -d docker.zst -c | docker load
 
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
