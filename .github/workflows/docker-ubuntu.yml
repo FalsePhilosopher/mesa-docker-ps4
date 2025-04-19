@@ -86,7 +86,7 @@ jobs:
         id: cache-docker
         uses: actions/cache@v4
         with:
-          path: mesa32.tar.gz
+          path: mesa32.zst
           key: mesa32-docker
 
 
@@ -112,13 +112,13 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          gunzip -c mesa32.tar.gz | docker load
+          unzstd mesa32.zst | docker load
 
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa32 -f Dockerfile.mesa32 .
-          docker save mesa32 | gzip > mesa32.tar.gz
+          docker save mesa32 | zstd > mesa32.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |
@@ -133,7 +133,8 @@ jobs:
             meson setup build32 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe -Dopengl=true -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=enabled -Dlmsensors=enabled -Dglx=dri -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dglvnd=enabled -Dgbm=enabled -Dlibunwind=enabled -Dosmesa=true -Dgallium-nine=true -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Dshared-glapi=enabled -Dmicrosoft-clc=disabled -Dvalgrind=disabled && \
             meson configure build32 && \
             ninja -C build32 && \
-            DESTDIR='/mesa/package-root' ninja -C build32 install"
+            DESTDIR='/mesa/package-root' ninja -C build32 install && \
+            chown -R 1001:1001 /mesa"
 
           docker run \
             --rm \
@@ -146,7 +147,8 @@ jobs:
               meson setup build32 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -Dvalgrind=disabled -Dintel=enabled && \
               meson configure build32 && \
               ninja -C build32 && \
-              DESTDIR='/libdrm/package-root' ninja -C build32 install"
+              DESTDIR='/libdrm/package-root' ninja -C build32 install && \
+              chown -R 1001:1001 /libdrm"
         
       - name: Compress install directory
         working-directory: ./mesa/package-root
