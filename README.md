@@ -42,15 +42,8 @@ This repository contains Docker configurations for building Mesa with patches fo
             ninja -C build32 && \
             DESTDIR='/mesa/package-root' ninja -C build32 install && \
             mkdir -p package-root/DEBIAN && \
-            cat <<EOF > package-root/DEBIAN/control
-            Package: lib32-${{ env.LATEST_TAG }}
-            Version: 42069-${{ env.LATEST_TAG }}-PS4
-            Architecture: amd64
-            Maintainer: Your Name <youremail@example.com>
-            Description: Mesa graphics library for PS4 32 bit parts
-            EOF && \
-            dpkg-deb --build package-root lib32${{ env.LATEST_TAG }}-PS4.deb
-            "
+            printf \"Package: ${{ env.LATESTDRM_TAG }}\\nVersion: 42069-${{ env.LATESTDRM_TAG }}-PS4\\nArchitecture: amd64\\nMaintainer: Your Name\\nDescription: libdrm for PS4\\n\" > package-root/DEBIAN/control && \
+            dpkg-deb --build package-root lib32${{ env.LATEST_TAG }}-PS4.deb"
    ```
    4. Run the Docker image to build libdrm
       ```bash
