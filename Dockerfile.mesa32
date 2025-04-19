@@ -12,8 +12,8 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
     echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-17 main" >> /etc/apt/sources.list && \
     apt update
 
-RUN apt build-dep mesa -y && \
-        apt install -y \
+RUN apt build-dep mesa --no-install-recommends -y && \
+        apt install --no-install-recommends -y \
         git \
         build-essential \
         glslang-tools \
@@ -56,17 +56,11 @@ RUN apt build-dep mesa -y && \
         pkg-config \
         zstd
 
-RUN mkdir -p spirv-tools-32 && \
-    cd spirv-tools-32 && \
-    if [ ! -d build ]; then \
-        git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive . && \
+RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive . && \
         git submodule update --init && \
         python3 utils/git-sync-deps && \
         mkdir build && cd build && \
         cmake .. -DCMAKE_INSTALL_PREFIX=/usr -DCMAKE_BUILD_TYPE=Release && \
         make -j$(nproc) && \
-        make install; \
-    else \
-        echo "Using cached SPIRV-Tools build"; \
-        make install; \
-    fi
+        make install && \
+        rm -rf ../SPIRV-Tools
