@@ -11,6 +11,14 @@ RUN apk update && apk add --no-cache \
     cmake \
     make \
     meson \
+    mesa-vdpau-gallium \
+    libvdpau-dev \
+    libva-dev \
+    py3-yaml \
+    byacc \
+    flex-dev \
+    libunwind-dev \
+    lm-sensors-dev \
     glslang \
     ninja-build \
     g++ \
