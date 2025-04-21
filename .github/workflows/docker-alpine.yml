@@ -123,7 +123,7 @@ jobs:
       - name: Upload docker.zst as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docker-alpine.zst
+          name: docker32-alpine.zst
           path: docker.zst
 
       - name: Build Mesa/libdrm in Docker container
