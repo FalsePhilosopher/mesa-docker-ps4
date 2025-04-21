@@ -47,7 +47,7 @@ Go to the actions and run a workflow to build mesa with a git runner.
             ninja -C build32 && \
             DESTDIR='/mesa/package-root' ninja -C build32 install"
    ```
-   5. Run the Docker image to build libdrm
+5. Run the Docker image to build libdrm
       ```
       docker run \
             --rm \
