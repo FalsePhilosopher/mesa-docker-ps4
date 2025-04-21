@@ -86,7 +86,7 @@ jobs:
         id: cache-docker
         uses: actions/cache@v4
         with:
-          path: docker.zst
+          path: docker64-alpine.zst
           key: docker-alpine-64
 
 
@@ -112,19 +112,19 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          zstd -T0 -d docker.zst -c | docker load
+          zstd -T0 -d docker64-alpine.zst -c | docker load
 
       - name: Build 64-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa -f Dockerfile.alpine .
-          docker save mesa | zstd -19 -T0 > docker.zst
+          docker save mesa | zstd -19 -T0 > docker64-alpine.zst
 
-      - name: Upload docker.zst as artifact
+      - name: Upload docker64-alpine.zst as artifact
         uses: actions/upload-artifact@v4
         with:
           name: docker64-alpine.zst
-          path: docker.zst
+          path: docker64-alpine.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |

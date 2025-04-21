@@ -1,4 +1,4 @@
-name: Build Mesa on slim docker
+name: Build Mesa on trixie docker
 
 on:
   workflow_dispatch:
@@ -43,7 +43,7 @@ jobs:
          curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf -
          mv drm-${{ env.LATESTDRM_TAG }} libdrm
 
-  build-lib32mesa-ps4:
+  build-mesa-ps4:
     needs: cache-mesa
     runs-on: ubuntu-latest
     name: Build Mesa and Components for PS4
@@ -82,13 +82,12 @@ jobs:
           path: ./libdrm
           key: ${{ env.LATESTDRM_TAG }}
 
-      - name: Cache docker image
+      - name: Cache mesa image
         id: cache-docker
         uses: actions/cache@v4
         with:
-          path: docker64-slim.zst
-          key: docker-slim-64
-
+          path: docker64-full.zst
+          key: docker-full-64
 
       - name: Copy patches
         working-directory: ./patches
@@ -112,19 +111,19 @@ jobs:
       - name: Load docker image from cache
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
-          zstd -T0 -d docker64-slim.zst -c | docker load
-
-      - name: Build 64-bit Docker container if not cached
+          zstd -T0 -d docker64-full.zst -c | docker load
+          
+      - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          docker build -t mesa -f Dockerfile.mesa-slim .
-          docker save mesa | zstd -19 -T0 > docker64-slim.zst
+          docker build -t mesa64 -f Dockerfile.mesa64 .
+          docker save mesa64 | zstd -19 -T0 > docker64-full.zst
 
-      - name: Upload docker64-slim.zst as artifact
+      - name: Upload docker64-full.zst as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docker64-slim.zst
-          path: docker64-slim.zst
+          name: docker64-full.zst
+          path: docker64-full.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |
@@ -132,7 +131,7 @@ jobs:
             --rm \
             -v ${{ github.workspace }}/mesa:/mesa \
             -w /mesa \
-            mesa \
+            mesa64 \
             bash -c "
             mkdir -p build64 && \
             meson setup build64 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe -Dopengl=true -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=enabled -Dlmsensors=enabled -Dglx=dri -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dglvnd=enabled -Dgbm=enabled -Dlibunwind=enabled -Dosmesa=true -Dgallium-nine=true -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Dshared-glapi=enabled -Dmicrosoft-clc=disabled -Dvalgrind=disabled && \
@@ -145,7 +144,7 @@ jobs:
             --rm \
             -v ${{ github.workspace }}/libdrm:/libdrm \
             -w /libdrm \
-            mesa \
+            mesa64 \
             bash -c "
               mkdir -p build64 && \
               meson setup build64 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -Dvalgrind=disabled -Dintel=enabled && \
@@ -208,9 +207,8 @@ jobs:
           EOF
           dpkg-deb --build package-root ../${{ env.LATESTDRM_TAG }}-PS4.deb
 
-      - name: Upload libdrm.deb as artifact
+      - name: Upload drm.deb as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATESTDRM_TAG }}-PS4.deb
           path: ${{ env.LATESTDRM_TAG }}-PS4.deb
-
