@@ -11,7 +11,7 @@ Go to the actions and run a workflow to build mesa with a git runner.
 - Docker/zstd installed on your system.
 
 ### Building the Docker Image
-1. Clone the repository:
+1. Clone the repos:
    ```
    git clone https://github.com/FalsePhilosopher/mesa-docker-ps4.git
    cd mesa-docker-ps4
@@ -35,6 +35,7 @@ Go to the actions and run a workflow to build mesa with a git runner.
 4. Run the Docker image to build mesa
    ```
    docker run \
+            --rm \
             --platform linux/386 \
             -v ${{ github.workspace }}/mesa:/mesa \
             -w /mesa \
@@ -49,6 +50,7 @@ Go to the actions and run a workflow to build mesa with a git runner.
 5. Run the Docker image to build libdrm
       ```
       docker run \
+            --rm \
             --platform linux/386 \
             -v ${{ github.workspace }}/libdrm:/libdrm \
             -w /libdrm \
