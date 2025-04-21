@@ -120,6 +120,12 @@ jobs:
           docker build -t mesa32 -f Dockerfile.alpine .
           docker save mesa32 | zstd -19 -T0 > docker.zst
 
+      - name: Upload docker.zst as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: docker-alpine.zst
+          path: docker.zst
+
       - name: Build Mesa/libdrm in Docker container
         run: |
           docker run \
