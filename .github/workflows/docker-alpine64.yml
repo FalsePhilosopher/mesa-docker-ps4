@@ -1,4 +1,4 @@
-name: Build Mesa on alpine docker
+name: Build Mesa64 on alpine docker
 
 on:
   workflow_dispatch:

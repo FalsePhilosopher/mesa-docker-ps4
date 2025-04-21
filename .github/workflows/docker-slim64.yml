@@ -1,4 +1,4 @@
-name: Build Mesa on slim docker
+name: Build Mesa64 on trixie-slim docker
 
 on:
   workflow_dispatch:

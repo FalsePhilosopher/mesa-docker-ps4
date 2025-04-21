@@ -1,4 +1,4 @@
-name: Build Mesa on trixie docker
+name: Build Mesa64 on trixie docker
 
 on:
   workflow_dispatch:

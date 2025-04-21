@@ -1,4 +1,4 @@
-name: Build lib32Mesa on slim docker
+name: Build lib32Mesa on trixie-slim docker
 
 on:
   workflow_dispatch:
