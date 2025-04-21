@@ -114,7 +114,7 @@ jobs:
         run: |
           zstd -T0 -d docker.zst -c | docker load
 
-      - name: Build 32-bit Docker container if not cached
+      - name: Build 64-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa -f Dockerfile.mesa-slim .
@@ -189,8 +189,8 @@ jobs:
           EOF
           dpkg-deb --build package-root ../${{ env.LATEST_TAG }}-PS4.deb
 
-      - name: Upload lib32mesa.deb as artifact
-        uses: actions/upload-artifact@v4mesa
+      - name: Upload mesa.deb as artifact
+        uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATEST_TAG }}-PS4.deb
           path: ${{ env.LATEST_TAG }}-PS4.deb
@@ -208,7 +208,7 @@ jobs:
           EOF
           dpkg-deb --build package-root ../${{ env.LATESTDRM_TAG }}-PS4.deb
 
-      - name: Upload lib32drm.deb as artifact
+      - name: Upload libdrm.deb as artifact
         uses: actions/upload-artifact@v4
         with:
           name: ${{ env.LATESTDRM_TAG }}-PS4.deb
