@@ -114,7 +114,7 @@ jobs:
         run: |
           zstd -T0 -d docker.zst -c | docker load
 
-      - name: Build 32-bit Docker container if not cached
+      - name: Build 64-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
           docker build -t mesa -f Dockerfile.mesa-slim .
