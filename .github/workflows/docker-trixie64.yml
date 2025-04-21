@@ -116,7 +116,7 @@ jobs:
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          docker build -t mesa64 -f Dockerfile.mesa64 .
+          docker build -t mesa64 -f Dockerfile.trixie64 .
           docker save mesa64 | zstd -19 -T0 > docker64-full.zst
 
       - name: Upload docker64-full.zst as artifact

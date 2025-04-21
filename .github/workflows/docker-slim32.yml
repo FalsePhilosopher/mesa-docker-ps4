@@ -117,7 +117,7 @@ jobs:
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          docker build -t mesa32 -f Dockerfile.mesa32-slim .
+          docker build -t mesa32 -f Dockerfile.trixie32-slim .
           docker save mesa32 | zstd -19 -T0 > docker32-slim.zst
 
       - name: Upload docker32-slim.zst as artifact

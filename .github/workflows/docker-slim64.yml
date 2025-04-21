@@ -117,7 +117,7 @@ jobs:
       - name: Build 64-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          docker build -t mesa -f Dockerfile.mesa-slim .
+          docker build -t mesa -f Dockerfile.trixie64-slim .
           docker save mesa | zstd -19 -T0 > docker64-slim.zst
 
       - name: Upload docker64-slim.zst as artifact

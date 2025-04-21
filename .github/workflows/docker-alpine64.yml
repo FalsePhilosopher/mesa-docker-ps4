@@ -117,7 +117,7 @@ jobs:
       - name: Build 64-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          docker build -t mesa -f Dockerfile.alpine .
+          docker build -t mesa -f Dockerfile.alpine64 .
           docker save mesa | zstd -19 -T0 > docker64-alpine.zst
 
       - name: Upload docker64-alpine.zst as artifact
