@@ -87,7 +87,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: docker.zst
-          key: docker-alpine
+          key: docker-alpine-32
 
 
       - name: Copy patches

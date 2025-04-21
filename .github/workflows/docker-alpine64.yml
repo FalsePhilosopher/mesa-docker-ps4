@@ -1,4 +1,4 @@
-name: Build lib32Mesa on Ubuntu docker
+name: Build Mesa on alpine docker
 
 on:
   workflow_dispatch:
@@ -59,7 +59,7 @@ jobs:
             automake \
             libtool \
             zstd
-        
+
       - name: Fetch latest release tags
         id: fetch-latest-release
         run: |
@@ -82,12 +82,13 @@ jobs:
           path: ./libdrm
           key: ${{ env.LATESTDRM_TAG }}
 
-      - name: Cache mesa32 image
+      - name: Cache docker image
         id: cache-docker
         uses: actions/cache@v4
         with:
           path: docker.zst
-          key: docker-full-32
+          key: docker-alpine-64
+
 
       - name: Copy patches
         working-directory: ./patches
@@ -99,12 +100,12 @@ jobs:
         working-directory: ./mesa
         run: |
           patch  -Np1 < mesa.patch
-          
+
       - name: Patch libdrm
         working-directory: ./libdrm
-        run: | 
+        run: |
           patch  -Np1 < libdrm.patch
-          
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -112,70 +113,68 @@ jobs:
         if: steps.cache-docker.outputs.cache-hit == 'true'
         run: |
           zstd -T0 -d docker.zst -c | docker load
-          
+
       - name: Build 32-bit Docker container if not cached
         if: steps.cache-docker.outputs.cache-hit != 'true'
         run: |
-          docker build -t mesa32 -f Dockerfile.mesa32 .
-          docker save mesa32 | zstd -19 -T0 > docker.zst
+          docker build -t mesa -f Dockerfile.alpine .
+          docker save mesa | zstd -19 -T0 > docker.zst
 
       - name: Upload docker.zst as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: docker32-full.zst
+          name: docker64-alpine.zst
           path: docker.zst
 
       - name: Build Mesa/libdrm in Docker container
         run: |
           docker run \
             --rm \
-            --platform linux/386 \
             -v ${{ github.workspace }}/mesa:/mesa \
             -w /mesa \
-            mesa32 \
+            mesa \
             bash -c "
-            mkdir -p build32 && \
-            meson setup build32 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe -Dopengl=true -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=enabled -Dlmsensors=enabled -Dglx=dri -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dglvnd=enabled -Dgbm=enabled -Dlibunwind=enabled -Dosmesa=true -Dgallium-nine=true -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Dshared-glapi=enabled -Dmicrosoft-clc=disabled -Dvalgrind=disabled && \
-            meson configure build32 && \
-            ninja -C build32 && \
-            DESTDIR='/mesa/package-root' ninja -C build32 install && \
+            mkdir -p build64 && \
+            meson setup build64 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe -Dopengl=true -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=enabled -Dlmsensors=enabled -Dglx=dri -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dgbm=enabled -Dlibunwind=enabled -Dosmesa=true -Dgallium-nine=true -Dvideo-codecs=vc1dec,h264dec,h264enc,h265dec,h265enc,av1dec,av1enc,vp9dec -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Dshared-glapi=enabled -Dmicrosoft-clc=disabled -Dvalgrind=disabled -Dglvnd=disabled && \
+            meson configure build64 && \
+            ninja -C build64 && \
+            DESTDIR='/mesa/package-root' ninja -C build64 install && \
             chown -R 1001:1001 /mesa"
 
           docker run \
             --rm \
-            --platform linux/386 \
             -v ${{ github.workspace }}/libdrm:/libdrm \
             -w /libdrm \
-            mesa32 \
+            mesa \
             bash -c "
-              mkdir -p build32 && \
-              meson setup build32 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -Dvalgrind=disabled -Dintel=enabled && \
-              meson configure build32 && \
-              ninja -C build32 && \
-              DESTDIR='/libdrm/package-root' ninja -C build32 install && \
+              mkdir -p build64 && \
+              meson setup build64 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -Dvalgrind=disabled -Dintel=enabled && \
+              meson configure build64 && \
+              ninja -C build64 && \
+              DESTDIR='/libdrm/package-root' ninja -C build64 install && \
               chown -R 1001:1001 /libdrm"
-        
+
       - name: Compress install directory
         working-directory: ./mesa/package-root
         run: |
-          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build32-PS4.tzst *
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATEST_TAG }}-build64-PS4.tzst *
 
-      - name: Upload mesa-build32.tar.zst as artifact
+      - name: Upload mesa-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.LATEST_TAG }}-build32-PS4.tzst
-          path: ${{ env.LATEST_TAG }}-build32-PS4.tzst
-        
+          name: ${{ env.LATEST_TAG }}-build64-PS4.tzst
+          path: ${{ env.LATEST_TAG }}-build64-PS4.tzst
+
       - name: Compress install directory
         working-directory: ./libdrm/package-root
         run: |
-          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build32-PS4.tzst *
+          tar -I 'zstd -19 -T0' -cf ../../${{ env.LATESTDRM_TAG }}-build64-PS4.tzst *
 
-      - name: Upload libdrm-build32.tar.zst as artifact
+      - name: Upload libdrm-build64.tar.zst as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ env.LATESTDRM_TAG }}-build32-PS4.tzst
-          path: ${{ env.LATESTDRM_TAG }}-build32-PS4.tzst
+          name: ${{ env.LATESTDRM_TAG }}-build64-PS4.tzst
+          path: ${{ env.LATESTDRM_TAG }}-build64-PS4.tzst
 
       - name: Create control file/DEB
         working-directory: ./mesa
@@ -188,13 +187,13 @@ jobs:
           Maintainer: Your Name <youremail@example.com>
           Description: Mesa graphics library for PS4
           EOF
-          dpkg-deb --build package-root ../lib32${{ env.LATEST_TAG }}-PS4.deb
+          dpkg-deb --build package-root ../${{ env.LATEST_TAG }}-PS4.deb
 
-      - name: Upload lib32mesa.deb as artifact
+      - name: Upload mesa.deb as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: lib32${{ env.LATEST_TAG }}-PS4.deb
-          path: lib32${{ env.LATEST_TAG }}-PS4.deb
+          name: ${{ env.LATEST_TAG }}-PS4.deb
+          path: ${{ env.LATEST_TAG }}-PS4.deb
 
       - name: Create control file/DEB
         working-directory: ./libdrm
@@ -207,10 +206,10 @@ jobs:
           Maintainer: Your Name <youremail@example.com>
           Description: libdrm for PS4
           EOF
-          dpkg-deb --build package-root ../lib32${{ env.LATESTDRM_TAG }}-PS4.deb
+          dpkg-deb --build package-root ../${{ env.LATESTDRM_TAG }}-PS4.deb
 
-      - name: Upload lib32drm.deb as artifact
+      - name: Upload libdrm.deb as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: lib32${{ env.LATESTDRM_TAG }}-PS4.deb
-          path: lib32${{ env.LATESTDRM_TAG }}-PS4.deb
+          name: ${{ env.LATESTDRM_TAG }}-PS4.deb
+          path: ${{ env.LATESTDRM_TAG }}-PS4.deb
