@@ -22,10 +22,10 @@ RUN apk update && apk add --no-cache \
     glslang \
     ninja-build \
     g++ \
-    clang20 \
-    llvm20 \
-    llvm20-dev \
-    clang20-extra-tools \
+    clang19 \
+    clang19-extra-tools \
+    llvm19 \
+    llvm19-dev \
     zstd \
     libelf \
     lua-system \
