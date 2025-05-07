@@ -166,6 +166,7 @@ jobs:
             libwayland-dev \
             libwayland-egl-backend-dev \
             wayland-protocols \
+            wayland-scanner++ \
             libxcb-randr0-dev \
             xorg-dev \
             xserver-xorg-dev \
