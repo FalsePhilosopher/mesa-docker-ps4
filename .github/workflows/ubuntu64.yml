@@ -39,7 +39,7 @@ jobs:
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
           latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/593/repository/tags" | jq -r '.[0].name')
           echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
-          latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
+          latest_wptag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
           echo "LATEST_WPTAG=$latest_wptag" >> $GITHUB_ENV
 
 
