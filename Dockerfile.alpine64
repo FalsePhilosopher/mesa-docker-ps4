@@ -1,5 +1,5 @@
 # Base image
-FROM alpine:3.21.3
+FROM alpine:edge
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -22,10 +22,10 @@ RUN apk update && apk add --no-cache \
     glslang \
     ninja-build \
     g++ \
-    clang17 \
-    llvm17 \
-    llvm17-dev \
-    clang17-extra-tools \
+    clang19 \
+    llvm19 \
+    llvm19-dev \
+    clang19-extra-tools \
     zstd \
     libelf \
     lua-system \
