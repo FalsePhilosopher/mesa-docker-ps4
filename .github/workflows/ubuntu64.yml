@@ -120,9 +120,11 @@ jobs:
         uses: actions/cache@v4
         with:
           path: |
-            /var/cache/apt/archives
-            /var/lib/apt/lists
-          key: apt-cache
+            /var/lib/apt/lists/*
+            !/var/lib/apt/lists/partial
+            !/var/lib/apt/lists/lock
+            /var/cache/apt/archives/*.deb
+          key: apt-cache-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
 
       - name: Enable source repositories
         run: |
@@ -173,6 +175,8 @@ jobs:
             autoconf \
             automake \
             libtool \
+            rustc \
+            cargo \
             zstd
             cargo add wayland-scanner
 
