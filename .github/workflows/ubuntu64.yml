@@ -166,15 +166,15 @@ jobs:
             libwayland-dev \
             libwayland-egl-backend-dev \
             wayland-protocols \
-            wayland-scanner++ \
             libxcb-randr0-dev \
             xorg-dev \
             xserver-xorg-dev \
             libpciaccess-dev \
             autoconf \
             automake \
-            libtool
+            libtool \
             zstd
+            cargo add wayland-scanner
 
       - name: Restore SPIRV-Tools cache
         uses: actions/cache@v4
