@@ -20,7 +20,7 @@ jobs:
         if: steps.cache-spirv.outputs.cache-hit != 'true'
         run: |
           sudo apt update
-          sudo apt install -y cmake python3 git g++ pkg-config
+          sudo apt install -y cmake python3 git g++ pkg-config ninja meson
 
           git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
           cd SPIRV-Tools
@@ -39,6 +39,8 @@ jobs:
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
           latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/593/repository/tags" | jq -r '.[0].name')
           echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
+          latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
+          echo "LATEST_WPTAG=$latest_wptag" >> $GITHUB_ENV
 
 
       - name: Cache Mesa repository
@@ -80,6 +82,19 @@ jobs:
           curl -L "https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/archive/${{ env.LATESTXF86_TAG }}/xf86-video-amdgpu-${{ env.LATESTXF86_TAG }}.tar.gz" | tar -xzvf -
           mv xf86-* xf86-video-amdgpu
 
+      - name: Cache wayland-protocol repository
+        id: cache-wayland
+        uses: actions/cache@v4
+        with:
+          path: ./wayland-protocols
+          key: wayland-protocols-${{ env.LATESTWP_TAG }}
+
+      - name: Clone wayland-protocol repository if not cached
+        if: steps.cache-wayland.outputs.cache-hit != 'true'
+        run: |
+          curl -L "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/archive/${{ env.LATESTWP_TAG }}/wayland-protocols-${{ env.LATESTWP_TAG }}.tar.gz" | tar -xzvf -
+          mv wayland-protocols-* wayland-protocols
+          
   build-mesa-ps4:
     needs: build-and-cache-spirv
     runs-on: ubuntu-latest
@@ -98,6 +113,8 @@ jobs:
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
           latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/593/repository/tags" | jq -r '.[0].name')
           echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
+          latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
+          echo "LATEST_WPTAG=$latest_wptag" >> $GITHUB_ENV
 
       - name: Cache APT packages
         uses: actions/cache@v4
@@ -169,6 +186,21 @@ jobs:
           echo "$HOME/spirv-tools-install/bin" >> $GITHUB_PATH
           echo "CMAKE_PREFIX_PATH=$HOME/spirv-tools-install" >> $GITHUB_ENV
           echo "PKG_CONFIG_PATH=$HOME/spirv-tools-install/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
+
+      - name: Restore wayland cache
+        uses: actions/cache@v4
+        with:
+          path: ./wayland-protocols
+          key: wayland-protocols-${{ env.LATESTWP_TAG }}
+          
+      - name: Install wayland protocols
+        run: |
+          cd wayland-protocols
+          mkdir build
+          meson setup build --buildtype=release --prefix=/usr
+          meson configure build
+          ninja -C build
+          ninja -C build install
    
       - name: Restore Mesa repository cache
         id: restore-mesa
