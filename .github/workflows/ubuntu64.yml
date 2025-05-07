@@ -178,7 +178,6 @@ jobs:
             rustc \
             cargo \
             zstd
-            cargo add wayland-scanner
 
       - name: Restore SPIRV-Tools cache
         uses: actions/cache@v4
