@@ -9,27 +9,6 @@ jobs:
     name: Build/cache SPIRV-Tools & cache Mesa,libdrm, xf86
 
     steps:
-      - name: Cache SPIRV-Tools
-        id: cache-spirv
-        uses: actions/cache@v4
-        with:
-          path: ~/spirv-tools-install
-          key: spirv-tools
-
-      - name: Build SPIRV-Tools if not cached
-        if: steps.cache-spirv.outputs.cache-hit != 'true'
-        run: |
-          sudo apt update
-          sudo apt install -y cmake python3 git g++ pkg-config ninja meson
-
-          git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive
-          cd SPIRV-Tools
-          python3 utils/git-sync-deps
-          mkdir build && cd build
-          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
-          make -j$(nproc)
-          make install
-
       - name: Fetch latest release tags
         id: fetch-latest-release
         run: |
@@ -43,8 +22,31 @@ jobs:
           echo "LATESTW_TAG=$latestw_tag" >> $GITHUB_ENV
           latestwp_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
           echo "LATESTWP_TAG=$latestwp_tag" >> $GITHUB_ENV
+          latestst_tag=$(curl -s https://api.github.com/repos/KhronosGroup/SPIRV-Tools/releases/latest | jq -r .tag_name)
+          echo "LATESTST_TAG=$latestst_tag" >> $GITHUB_ENV
+    
+      - name: Cache SPIRV-Tools
+        id: cache-spirv
+        uses: actions/cache@v4
+        with:
+          path: ~/spirv-tools-install
+          key: spirv-tools-${{ env.LATESTST_TAG }}
 
-
+      - name: Build SPIRV-Tools if not cached
+        if: steps.cache-spirv.outputs.cache-hit != 'true'
+        run: |
+          sudo apt update
+          sudo apt install -y cmake python3 git g++ pkg-config ninja meson
+          wget https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/${{ env.LATESTST_TAG }}.zip
+          unzip ${{ env.LATESTST_TAG }}.zip
+          mv SPIRV-Tools-* SPIRV-Tools
+          cd SPIRV-Tools
+          python3 utils/git-sync-deps
+          mkdir build && cd build
+          cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=$HOME/spirv-tools-install
+          make -j$(nproc)
+          make install
+          
       - name: Cache Mesa repository
         id: cache-mesa
         uses: actions/cache@v4
