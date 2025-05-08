@@ -136,11 +136,7 @@ jobs:
       - name: Cache APT packages
         uses: actions/cache@v4
         with:
-          path: |
-            /var/lib/apt/lists/*
-            !/var/lib/apt/lists/partial
-            !/var/lib/apt/lists/lock
-            /var/cache/apt/archives/*.deb
+          path: /var/cache/apt/archives/*.deb
           key: apt-cache-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
 
       - name: Enable source repositories
