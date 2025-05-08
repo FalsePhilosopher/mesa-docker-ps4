@@ -221,7 +221,7 @@ jobs:
           meson setup build --buildtype=release --prefix=/usr
           meson configure build
           ninja -C build
-          ninja -C build install
+          sudo ninja -C build install
 
       - name: Restore wayland protocols cache
         uses: actions/cache@v4
@@ -236,7 +236,7 @@ jobs:
           meson setup build --buildtype=release --prefix=/usr
           meson configure build
           ninja -C build
-          ninja -C build install
+          sudo ninja -C build install
    
       - name: Restore Mesa repository cache
         id: restore-mesa
