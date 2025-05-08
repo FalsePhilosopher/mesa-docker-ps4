@@ -36,7 +36,7 @@ jobs:
         if: steps.cache-spirv.outputs.cache-hit != 'true'
         run: |
           sudo apt update
-          sudo apt install -y cmake python3 git g++ pkg-config ninja meson
+          sudo apt install -y cmake python3 git g++ pkg-config ninja-build
           wget https://github.com/KhronosGroup/SPIRV-Tools/archive/refs/tags/${{ env.LATESTST_TAG }}.zip
           unzip ${{ env.LATESTST_TAG }}.zip
           mv SPIRV-Tools-* SPIRV-Tools
