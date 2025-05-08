@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache \
     cmake \
     make \
     meson \
+    bison \
     mesa-vdpau-gallium \
     libvdpau-dev \
     libva-dev \
@@ -33,6 +34,8 @@ RUN apk update && apk add --no-cache \
     libunwind \
     spirv-llvm-translator-libs \
     libxcb \
+    xcb-util-keysyms-dev \
+    xcb-util-dev \
     xorg-server-dev \
     lua-etlua \
     libx11-dev \
@@ -49,7 +52,6 @@ RUN apk update && apk add --no-cache \
     wayland-libs-server \
     wayland-libs-client \
     xorg-server-dev \
-    xcb-util-dev \
     python3 \
     py3-pip \
     py3-setuptools \
@@ -61,6 +63,7 @@ RUN apk update && apk add --no-cache \
     automake \
     pkgconfig \
     elfutils-dev \
+    lua5.4-system \
     lua5.4-dev \
     libudev-zero-dev \
     libpciaccess-dev \
