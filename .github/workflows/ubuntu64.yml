@@ -192,6 +192,7 @@ jobs:
             graphviz \
             libgraphviz-dev \
             doxygen \
+            xsltproc \
             zstd
 
       - name: Restore SPIRV-Tools cache
