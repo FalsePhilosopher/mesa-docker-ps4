@@ -189,6 +189,7 @@ jobs:
             autoconf \
             automake \
             libtool \
+            libgraphviz-dev \
             zstd
 
       - name: Restore SPIRV-Tools cache
