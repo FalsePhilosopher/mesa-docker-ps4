@@ -39,8 +39,10 @@ jobs:
           echo "LATESTDRM_TAG=$latestdrm_tag" >> $GITHUB_ENV
           latestxf86_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/593/repository/tags" | jq -r '.[0].name')
           echo "LATESTXF86_TAG=$latestxf86_tag" >> $GITHUB_ENV
-          latest_wptag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
-          echo "LATESTWP_TAG=$latest_wptag" >> $GITHUB_ENV
+          latestw_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/121/repository/tags" | jq -r '.[0].name')
+          echo "LATESTW_TAG=$latestw_tag" >> $GITHUB_ENV
+          latestwp_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
+          echo "LATESTWP_TAG=$latestwp_tag" >> $GITHUB_ENV
 
 
       - name: Cache Mesa repository
@@ -82,15 +84,28 @@ jobs:
           curl -L "https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/archive/${{ env.LATESTXF86_TAG }}/xf86-video-amdgpu-${{ env.LATESTXF86_TAG }}.tar.gz" | tar -xzvf -
           mv xf86-* xf86-video-amdgpu
 
-      - name: Cache wayland-protocol repository
+      - name: Cache wayland repository
         id: cache-wayland
+        uses: actions/cache@v4
+        with:
+          path: ./wayland
+          key: wayland-${{ env.LATESTW_TAG }}
+
+      - name: Clone wayland repository if not cached
+        if: steps.cache-wayland.outputs.cache-hit != 'true'
+        run: |
+          curl -L "https://gitlab.freedesktop.org/wayland/wayland/-/archive/${{ env.LATESTW_TAG }}/wayland-${{ env.LATESTWP_TAG }}.tar.gz" | tar -xzvf -
+          mv wayland-* wayland
+
+      - name: Cache wayland-protocol repository
+        id: cache-waylandP
         uses: actions/cache@v4
         with:
           path: ./wayland-protocols
           key: wayland-protocols-${{ env.LATESTWP_TAG }}
 
-      - name: Clone wayland-protocol repository if not cached
-        if: steps.cache-wayland.outputs.cache-hit != 'true'
+      - name: Clone wayland repository if not cached
+        if: steps.cache-waylandP.outputs.cache-hit != 'true'
         run: |
           curl -L "https://gitlab.freedesktop.org/wayland/wayland-protocols/-/archive/${{ env.LATESTWP_TAG }}/wayland-protocols-${{ env.LATESTWP_TAG }}.tar.gz" | tar -xzvf -
           mv wayland-protocols-* wayland-protocols
@@ -142,16 +157,15 @@ jobs:
             glslang-tools \
             libelf-dev \
             liblua5.4-dev \
-            libclang-17-dev \
-            clang-tools-17 \
+            libclang-18-dev \
+            clang-tools-18 \
             libclc-19-dev \
-            libclang-17-dev \
             libclang-cpp19 \
             libudev-dev \
             libvdpau1 \
             libunwind-dev \
-            llvm-17-dev \
-            llvm-spirv-17 \
+            llvm-18-dev \
+            llvm-spirv-18 \
             spirv-tools \
             libllvmspirvlib-19-dev \
             bindgen \
@@ -175,8 +189,6 @@ jobs:
             autoconf \
             automake \
             libtool \
-            rustc \
-            cargo \
             zstd
 
       - name: Restore SPIRV-Tools cache
@@ -192,6 +204,21 @@ jobs:
           echo "PKG_CONFIG_PATH=$HOME/spirv-tools-install/lib/pkgconfig:$PKG_CONFIG_PATH" >> $GITHUB_ENV
 
       - name: Restore wayland cache
+        uses: actions/cache@v4
+        with:
+          path: ./wayland
+          key: wayland-${{ env.LATESTW_TAG }}
+          
+      - name: Install wayland
+        run: |
+          cd wayland
+          mkdir build
+          meson setup build --buildtype=release --prefix=/usr
+          meson configure build
+          ninja -C build
+          ninja -C build install
+
+      - name: Restore wayland protocols cache
         uses: actions/cache@v4
         with:
           path: ./wayland-protocols
