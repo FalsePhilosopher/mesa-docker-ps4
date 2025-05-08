@@ -10,6 +10,7 @@ RUN apk update && apk add --no-cache \
     wget \
     cmake \
     make \
+    bison \
     meson \
     mesa-vdpau-gallium \
     libvdpau-dev \
@@ -62,6 +63,7 @@ RUN apk update && apk add --no-cache \
     automake \
     pkgconfig \
     elfutils-dev \
+    lua5.4-system \
     lua5.4-dev \
     libudev-zero-dev \
     libpciaccess-dev \
