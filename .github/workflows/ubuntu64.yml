@@ -133,12 +133,6 @@ jobs:
           latest_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
           echo "LATEST_WPTAG=$latest_wptag" >> $GITHUB_ENV
 
-      - name: Cache APT packages
-        uses: actions/cache@v4
-        with:
-          path: /var/cache/apt/archives/*.deb
-          key: apt-cache-${{ runner.os }}-${{ hashFiles('**/apt-packages.txt') }}
-
       - name: Enable source repositories
         run: |
           source /etc/os-release
