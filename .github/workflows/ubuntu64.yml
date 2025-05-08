@@ -22,7 +22,7 @@ jobs:
           echo "LATESTW_TAG=$latestw_tag" >> $GITHUB_ENV
           latestwp_tag=$(curl -s "https://gitlab.freedesktop.org/api/v4/projects/2891/repository/tags" | jq -r '.[0].name')
           echo "LATESTWP_TAG=$latestwp_tag" >> $GITHUB_ENV
-          latestst_tag=$(curl -s https://api.github.com/repos/KhronosGroup/SPIRV-Tools/releases/latest | jq -r .tag_name)
+          latestst_tag=$(curl -s "https://api.github.com/repos/KhronosGroup/SPIRV-Tools/releases/latest" | jq -r '.tag_name')
           echo "LATESTST_TAG=$latestst_tag" >> $GITHUB_ENV
     
       - name: Cache SPIRV-Tools
