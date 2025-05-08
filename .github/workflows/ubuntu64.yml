@@ -189,6 +189,7 @@ jobs:
             autoconf \
             automake \
             libtool \
+            graphviz \
             libgraphviz-dev \
             zstd
 
