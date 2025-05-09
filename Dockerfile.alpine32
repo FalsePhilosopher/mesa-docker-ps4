@@ -22,7 +22,7 @@ RUN apk update && apk add --no-cache \
     g++ \
     clang19 \
     clang19-extra-tools \
-    llvm20-dev \
+    llvm18-dev \
     spirv-llvm-translator-dev \
     zstd \
     libelf \
