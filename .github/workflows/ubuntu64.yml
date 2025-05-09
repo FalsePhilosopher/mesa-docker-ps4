@@ -164,7 +164,6 @@ jobs:
             llvm-spirv-18 \
             spirv-tools \
             libllvmspirvlib-19-dev \
-            rust-bindgen-cli \
             meson-1.5 \
             xutils-dev \
             ninja-build \
@@ -190,7 +189,9 @@ jobs:
             doxygen \
             xsltproc \
             xmlto \
-            zstd
+            zstd \
+            cargo
+            cargo binstall bindgen-cli
 
       - name: Restore SPIRV-Tools cache
         uses: actions/cache@v4
