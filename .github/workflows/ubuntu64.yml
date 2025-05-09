@@ -191,7 +191,7 @@ jobs:
             xmlto \
             zstd \
             cargo
-            cargo binstall bindgen-cli
+            cargo install bindgen-cli
 
       - name: Restore SPIRV-Tools cache
         uses: actions/cache@v4
