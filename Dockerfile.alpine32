@@ -1,9 +1,7 @@
-# Base image
 FROM i386/alpine:edge
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
 RUN apk update && apk add --no-cache \
     git \
     bash \
@@ -66,10 +64,10 @@ RUN apk update && apk add --no-cache \
     libudev-zero-dev \
     libpciaccess-dev \
     cbindgen \
-    rust-bindgen \
-    rustc-dev
-
-RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
+    cargo \
+    rustc-dev && \
+    cargo install bindgen-cli && \
+    git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
     cd SPIRV-Tools && \
     git submodule update --init && \
     python3 utils/git-sync-deps && \
