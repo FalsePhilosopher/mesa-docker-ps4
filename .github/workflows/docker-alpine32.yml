@@ -136,7 +136,7 @@ jobs:
             mesa32 \
             bash -c "
             mkdir -p build32 && \
-            meson setup build64 \
+            meson setup build32 \
             --buildtype=release \
             -Dprefix=/usr \
             -Dplatforms=x11,wayland \
