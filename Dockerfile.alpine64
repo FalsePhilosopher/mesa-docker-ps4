@@ -17,7 +17,10 @@ RUN apk update && apk add --no-cache \
     libva-dev \
     py3-yaml \
     flex-dev \
+    libvdpau \
     libunwind-dev \
+    llvm-libunwind-dev \
+    libxcb \
     lm-sensors-dev \
     glslang \
     ninja-build \
@@ -25,15 +28,12 @@ RUN apk update && apk add --no-cache \
     clang19 \
     llvm19 \
     llvm19-dev \
+    spirv-llvm-translator-dev
     clang19-extra-tools \
     zstd \
     libelf \
     libclc-dev \
     lua-system \
-    libvdpau \
-    libunwind \
-    spirv-llvm-translator-libs \
-    libxcb \
     xcb-util-keysyms-dev \
     xcb-util-dev \
     xorg-server-dev \
