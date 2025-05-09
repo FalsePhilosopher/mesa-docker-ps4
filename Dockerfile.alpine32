@@ -24,6 +24,7 @@ RUN apk update && apk add --no-cache \
     clang20-extra-tools \
     llvm20-dev \
     spirv-llvm-translator-dev \
+    valgrind-dev \
     zstd \
     libelf \
     lua-system \
