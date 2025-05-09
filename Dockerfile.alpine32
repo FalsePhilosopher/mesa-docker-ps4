@@ -27,12 +27,12 @@ RUN apk update && apk add --no-cache \
     clang19-extra-tools \
     llvm19 \
     llvm19-dev \
+    spirv-llvm-translator-dev \
     zstd \
     libelf \
     lua-system \
     libvdpau \
     libunwind \
-    spirv-llvm-translator-libs \
     libxcb \
     xcb-util-keysyms-dev \
     xcb-util-dev \
