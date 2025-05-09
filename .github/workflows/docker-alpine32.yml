@@ -146,7 +146,7 @@ jobs:
             -Dvulkan-layers=device-select,overlay,screenshot \
             -Dbuild-aco-tests=true \
             -Dgallium-extra-hud=true \
-            -Dgallium-drivers=radeonsi,zink,virgl \
+            -Dgallium-drivers=radeonsi,r600,zink,virgl \
             -Dopengl=true \
             -Dgallium-rusticl=false \
             -Dgles1=enabled \
