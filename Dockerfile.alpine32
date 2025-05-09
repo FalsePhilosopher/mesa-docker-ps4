@@ -30,6 +30,7 @@ RUN apk update && apk add --no-cache \
     libelf \
     lua-system \
     libvdpau \
+    libunwind-dev \
     llvm-libunwind-dev \
     libxcb \
     xcb-util-keysyms-dev \
