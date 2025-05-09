@@ -20,8 +20,8 @@ RUN apk update && apk add --no-cache \
     glslang \
     ninja-build \
     g++ \
-    clang19 \
-    clang19-extra-tools \
+    clang18 \
+    clang18-extra-tools \
     llvm18-dev \
     spirv-llvm-translator-dev \
     zstd \
