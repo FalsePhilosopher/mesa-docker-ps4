@@ -1,9 +1,7 @@
-# Base image
 FROM alpine:edge
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
 RUN apk update && apk add --no-cache \
     git \
     bash \
