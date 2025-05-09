@@ -136,7 +136,7 @@ jobs:
             mesa32 \
             bash -c "
             mkdir -p build32 && \
-            meson setup build32 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dbuild-aco-tests=true -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,zink,virgl -Dopengl=true -Dgallium-rusticl=false -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=auto -Dlmsensors=enabled -Dglx=auto -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dgbm=enabled -Dlibunwind=enabled -Dvideo-codecs=all -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Damd-use-llvm=false -Dmicrosoft-clc=disabled -Dvalgrind=disabled -Dglvnd=disabled && \
+            meson setup build32 --buildtype=release -Dprefix=/usr -Dplatforms=x11,wayland -Dvulkan-drivers=amd,swrast,virtio -Dshader-cache=enabled -Dshader-cache-max-size=8G -Dvulkan-layers=device-select,overlay,screenshot -Dbuild-aco-tests=true -Dgallium-extra-hud=true -Dgallium-drivers=radeonsi,zink,virgl -Dopengl=true -Dgallium-rusticl=true -Dgles1=enabled -Dgles2=enabled -Degl=enabled -Dllvm=auto -Dlmsensors=enabled -Dglx=auto -Dtools=glsl,nir -Dgallium-vdpau=enabled -Dgallium-va=enabled -Dgbm=enabled -Dlibunwind=enabled -Dvideo-codecs=all -Dlegacy-x11=dri2 -Dteflon=true -Dzstd=enabled -Damd-use-llvm=false -Dmicrosoft-clc=disabled -Dvalgrind=enabled -Dglvnd=disabled && \
             meson configure build32 && \
             ninja -C build32 && \
             DESTDIR='/mesa/package-root' ninja -C build32 install && \
@@ -150,7 +150,7 @@ jobs:
             mesa32 \
             bash -c "
               mkdir -p build32 && \
-              meson setup build32 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=false -Dvalgrind=disabled -Dintel=enabled && \
+              meson setup build32 -Dsysconfdir=/etc -Dprefix=/usr --buildtype plain -Dudev=true -Dvalgrind=enabled -Dintel=enabled && \
               meson configure build32 && \
               ninja -C build32 && \
               DESTDIR='/libdrm/package-root' ninja -C build32 install && \
