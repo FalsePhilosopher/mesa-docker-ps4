@@ -19,7 +19,6 @@ RUN apk update && apk add --no-cache \
     flex-dev \
     libvdpau \
     libunwind-dev \
-    llvm-libunwind-dev \
     libxcb \
     lm-sensors-dev \
     glslang \
