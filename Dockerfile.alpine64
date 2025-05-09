@@ -26,7 +26,6 @@ RUN apk update && apk add --no-cache \
     ninja-build \
     g++ \
     clang19 \
-    llvm19 \
     llvm19-dev \
     spirv-llvm-translator-dev \
     clang19-extra-tools \
