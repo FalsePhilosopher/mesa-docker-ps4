@@ -18,6 +18,7 @@ RUN apk update && apk add --no-cache \
     py3-yaml \
     flex-dev \
     libvdpau \
+    libunwind-dev \
     llvm-libunwind-dev \
     libxcb \
     lm-sensors-dev \
