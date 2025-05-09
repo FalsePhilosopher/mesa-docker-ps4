@@ -24,7 +24,6 @@ RUN apk update && apk add --no-cache \
     g++ \
     clang19 \
     clang19-extra-tools \
-    llvm19 \
     llvm19-dev \
     spirv-llvm-translator-dev \
     zstd \
