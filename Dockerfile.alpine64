@@ -28,7 +28,7 @@ RUN apk update && apk add --no-cache \
     clang19 \
     llvm19 \
     llvm19-dev \
-    spirv-llvm-translator-dev
+    spirv-llvm-translator-dev \
     clang19-extra-tools \
     zstd \
     libelf \
