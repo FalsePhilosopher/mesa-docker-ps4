@@ -28,6 +28,7 @@ RUN apk update && apk add --no-cache \
     clang19-extra-tools \
     zstd \
     libelf \
+    libclc-dev \
     lua-system \
     libvdpau \
     libunwind \
