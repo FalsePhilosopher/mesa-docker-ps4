@@ -68,7 +68,8 @@ RUN apk update && apk add --no-cache \
     libudev-zero-dev \
     libpciaccess-dev \
     cbindgen \
-    rust-bindgen
+    rust-bindgen \
+    rustc-dev
 
 RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
     cd SPIRV-Tools && \
