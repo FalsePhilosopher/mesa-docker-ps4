@@ -15,6 +15,7 @@ RUN apk update && apk add --no-cache \
     mesa-vdpau-gallium \
     libvdpau-dev \
     libva-dev \
+    libclc-dev \
     py3-yaml \
     flex-dev \
     libunwind-dev \
