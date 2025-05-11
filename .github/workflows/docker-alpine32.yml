@@ -135,9 +135,6 @@ jobs:
             -w /mesa \
             mesa32 \
             bash -c "
-            apk add --no-cache cargo && \
-            cargo install bindgen-cli && \
-            export PATH="/root/.cargo/bin:$PATH" && \
             mkdir -p build32 && \
             meson setup build32 \
             --buildtype=release \
