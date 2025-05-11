@@ -137,7 +137,7 @@ jobs:
             bash -c "
             apk add --no-cache cargo && \
             cargo install bindgen-cli && \
-            echo "/root/.cargo/bin" >> $GITHUB_PATH && \
+            export PATH="/root/.cargo/bin:$PATH" && \
             mkdir -p build32 && \
             meson setup build32 \
             --buildtype=release \
