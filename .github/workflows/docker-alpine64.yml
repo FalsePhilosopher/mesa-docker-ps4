@@ -134,7 +134,7 @@ jobs:
             -w /mesa \
             mesa \
             bash -c "
-            apk apk add --no-cache cargo && \
+            apk add --no-cache cargo && \
             cargo install bindgen-cli && \
             mkdir -p build64 && \
             meson setup build64 \
