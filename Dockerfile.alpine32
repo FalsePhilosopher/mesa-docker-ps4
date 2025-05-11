@@ -1,6 +1,7 @@
 FROM i386/alpine:edge
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="/root/.cargo/bin:$PATH"
 
 RUN apk update && apk add --no-cache \
     git \
@@ -10,33 +11,37 @@ RUN apk update && apk add --no-cache \
     make \
     bison \
     meson \
-    mesa-vdpau-gallium \
-    libvdpau-dev \
-    libva-dev \
-    libclc-dev \
-    py3-yaml \
-    flex-dev \
-    lm-sensors-dev \
     glslang \
     ninja-build \
     g++ \
-    clang20 \
+    clang20-dev \
+    clang20-libs \
+    clang20-libclang \
     clang20-extra-tools \
     llvm20-dev \
     spirv-llvm-translator-dev \
     valgrind-dev \
     zstd \
+    flex-dev \
+    libvdpau-dev \
+    libva-dev \
+    libclc-dev \
+    libudev-zero-dev \
+    libpciaccess-dev \
     libelf \
-    lua-system \
     libvdpau \
     libunwind-dev \
+    libx11-dev \
+    libxrandr-dev \
+    libdrm \
+    libtool \
+    libpciaccess \
     libxcb \
     xcb-util-keysyms-dev \
     xcb-util-dev \
     xorg-server-dev \
-    libx11-dev \
-    libxrandr-dev \
-    libdrm \
+    lm-sensors-dev \
+    mesa-vdpau-gallium \
     mesa-dev \
     mesa-gles \
     mesa-gbm \
@@ -49,24 +54,23 @@ RUN apk update && apk add --no-cache \
     wayland-libs-client \
     xorg-server-dev \
     python3 \
+    py3-yaml \
     py3-pip \
     py3-setuptools \
     py3-mako \
     xorgproto \
-    libtool \
-    libpciaccess \
     autoconf \
     automake \
     pkgconfig \
     elfutils-dev \
+    lua-system \
     lua-etlua \
     lua5.4-system \
     lua5.4-dev \
-    libudev-zero-dev \
-    libpciaccess-dev \
     cbindgen \
-    rust-bindgen \
+    cargo \
     rustc-dev && \
+    cargo install bindgen-cli && \
     git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
     cd SPIRV-Tools && \
     git submodule update --init && \
