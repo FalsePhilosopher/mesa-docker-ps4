@@ -134,6 +134,8 @@ jobs:
             -w /mesa \
             mesa \
             bash -c "
+            apk apk add --no-cache cargo && \
+            cargo install bindgen-cli && \
             mkdir -p build64 && \
             meson setup build64 \
             --buildtype=release \
@@ -147,7 +149,7 @@ jobs:
             -Dgallium-extra-hud=true \
             -Dgallium-drivers=radeonsi,r600,zink,virgl \
             -Dopengl=true \
-            -Dgallium-rusticl=false \
+            -Dgallium-rusticl=true \
             -Dgles1=enabled \
             -Dgles2=enabled \
             -Degl=enabled \
