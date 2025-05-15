@@ -302,6 +302,7 @@ jobs:
             -Dteflon=true \
             -Dzstd=enabled \
             -Damd-use-llvm=true \
+            -Dspirv-to-dxil=true \
             -Dmicrosoft-clc=disabled \
             -Dvalgrind=enabled \
             -Dglvnd=disabled
