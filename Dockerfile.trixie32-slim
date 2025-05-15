@@ -2,6 +2,7 @@
 FROM i386/debian:trixie-slim
 
 ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH="/root/.cargo/bin:$PATH"
 
 RUN echo "deb-src http://deb.debian.org/debian trixie main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
     echo "deb-src http://security.debian.org/debian-security trixie-security main contrib non-free non-free-firmware" >> /etc/apt/sources.list && \
@@ -9,27 +10,25 @@ RUN echo "deb-src http://deb.debian.org/debian trixie main contrib non-free non-
     apt update && apt install -y wget gpg
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg && \
-    echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-17 main" >> /etc/apt/sources.list && \
+    echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-18 main" >> /etc/apt/sources.list && \
     apt update
-
-RUN apt build-dep mesa --no-install-recommends -y && \
-        apt install --no-install-recommends -y \
+    apt install --no-install-recommends -y \
         git \
         build-essential \
         glslang-tools \
         libelf-dev \
         liblua5.4-dev \
-        libclang-17-dev \
-        clang-17 \
-        clang-tools-17 \
-        libclang-17-dev \
-        llvm-17-dev \
-        libclc-19-dev \
-        libclang-cpp19 \
+        libclang-18-dev \
+        clang-18 \
+        clang-tools-18 \
+        libclang-18-dev \
+        llvm-18-dev \
+        libclc-18-dev \
+        libclang-cpp18 \
         libudev-dev \
         libvdpau1 \
         libunwind-dev \
-        libllvmspirvlib-19-dev \
+        libllvmspirvlib-18-dev \
         bindgen \
         meson \
         xutils-dev \
@@ -54,11 +53,12 @@ RUN apt build-dep mesa --no-install-recommends -y && \
         cmake \
         g++ \
         pkg-config \
+        cargo \
         zstd && \
         apt-get clean && \
-        rm -rf /var/lib/apt/lists/*
-
-RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
+        rm -rf /var/lib/apt/lists/* && \
+        cargo install bindgen-cli && \
+        git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
         cd SPIRV-Tools && \
         git submodule update --init && \
         python3 utils/git-sync-deps && \
@@ -67,3 +67,4 @@ RUN git clone https://github.com/KhronosGroup/SPIRV-Tools.git --recursive && \
         make -j$(nproc) && \
         make install && \
         cd ../.. && rm -rf SPIRV-Tools
+        
