@@ -153,17 +153,17 @@ jobs:
             glslang-tools \
             libelf-dev \
             liblua5.4-dev \
-            libclang-18-dev \
-            clang-tools-18 \
-            libclc-18-dev \
-            libclang-cpp18 \
+            libclang-19-dev \
+            clang-tools-19 \
+            libclc-19-dev \
+            libclang-cpp19 \
             libudev-dev \
             libvdpau1 \
             libunwind-dev \
-            llvm-18-dev \
-            llvm-spirv-18 \
+            llvm-19-dev \
+            llvm-spirv-19 \
             spirv-tools \
-            libllvmspirvlib-18-dev \
+            libllvmspirvlib-19-dev \
             meson-1.5 \
             xutils-dev \
             ninja-build \
