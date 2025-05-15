@@ -16,7 +16,6 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         git \
         build-essential \
         glslang-tools \
-        libelf-dev \
         liblua5.4-dev \
         libclang-18-dev \
         clang-18 \
@@ -25,11 +24,12 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         llvm-18-dev \
         libclc-18-dev \
         libclang-cpp18 \
+        libelf-dev \
         libudev-dev \
         libvdpau1 \
+        libva-dev \
         libunwind-dev \
         libllvmspirvlib-18-dev \
-        bindgen \
         meson \
         xutils-dev \
         ninja-build \
