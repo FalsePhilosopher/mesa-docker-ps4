@@ -36,6 +36,7 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         python3-pip \
         python3-setuptools \
         python3-mako \
+        libvdpau-dev \
         libdrm-dev \
         libgbm-dev \
         libegl-dev \
