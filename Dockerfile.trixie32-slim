@@ -10,21 +10,21 @@ RUN echo "deb-src http://deb.debian.org/debian trixie main contrib non-free non-
     apt update && apt install -y wget gpg
 
 RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc/apt/trusted.gpg.d/llvm.gpg && \
-    echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-18 main" >> /etc/apt/sources.list && \
+    echo "deb http://apt.llvm.org/bookworm/ llvm-toolchain-bookworm-19 main" >> /etc/apt/sources.list && \
     apt update && \
     apt install --no-install-recommends -y \
         git \
         build-essential \
         glslang-tools \
         liblua5.4-dev \
-        libclang-18-dev \
-        clang-18 \
-        clang-tools-18 \
-        libclang-18-dev \
-        llvm-18-dev \
-        libclc-18-dev \
-        libclang-cpp18 \
-        libllvmspirvlib-18-dev \
+        libclang-19-dev \
+        clang-19 \
+        clang-tools-19 \
+        libclang-19-dev \
+        llvm-19-dev \
+        libclc-19-dev \
+        libclang-cpp19 \
+        libllvmspirvlib-19-dev \
         libxcb-shm0-dev \
         libelf-dev \
         libudev-dev \
