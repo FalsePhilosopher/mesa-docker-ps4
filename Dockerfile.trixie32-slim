@@ -37,6 +37,7 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         libxcb-dri2-0-dev \
         libxcb-dri3-dev \
         libxcb-present-dev \
+        libxshmfence-dev \
         meson \
         bison \
         flex \
