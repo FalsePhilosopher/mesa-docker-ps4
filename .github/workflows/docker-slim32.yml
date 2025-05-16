@@ -168,9 +168,9 @@ jobs:
             -Dspirv-to-dxil=true \
             -Dstatic-libclc=all \
             -Dmesa-clc=auto \
-            -Dinstall-mesa-clc=true \
+            -Dinstall-mesa-clc=false \
             -Dosmesa=true \
-            -Dprecomp-compiler=enabled \
+            -Dprecomp-compiler=disabled \
             -Dmicrosoft-clc=disabled \
             -Dvalgrind=disabled \
             -Dshader-cache=enabled \
