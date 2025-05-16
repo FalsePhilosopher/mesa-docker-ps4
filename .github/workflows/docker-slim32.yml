@@ -140,10 +140,10 @@ jobs:
             --buildtype=release \
             -Dprefix=/usr \
             -Dplatforms=x11,wayland \
-            -Dvulkan-beta=true \
+            -Dvulkan-beta=false \
             -Dvulkan-drivers=amd,swrast,virtio \
             -Dvulkan-layers=device-select,overlay,screenshot \
-            -Dbuild-aco-tests=true \
+            -Dbuild-aco-tests=false \
             -Dgallium-rusticl=false \
             -Dgallium-extra-hud=true \
             -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe \
