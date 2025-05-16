@@ -304,6 +304,7 @@ jobs:
             -Damd-use-llvm=true \
             -Dspirv-to-dxil=true \
             -Dstatic-libclc=all \
+            -Dmesa-clc=enabled \
             -Dosmesa=true \
             -Dprecomp-compiler=enabled \
             -Dmicrosoft-clc=disabled \
