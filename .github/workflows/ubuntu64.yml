@@ -299,7 +299,6 @@ jobs:
             -Dlibunwind=enabled \
             -Dvideo-codecs=all \
             -Dlegacy-x11=dri2 \
-            -Dteflon=true \
             -Dzstd=enabled \
             -Damd-use-llvm=true \
             -Dspirv-to-dxil=true \
