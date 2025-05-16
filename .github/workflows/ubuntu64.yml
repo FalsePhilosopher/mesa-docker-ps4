@@ -306,6 +306,7 @@ jobs:
             -Dstatic-libclc=all \
             -Dmesa-clc=enabled \
             -Dinstall-mesa-clc=true \
+            -Dinstall-precomp-compiler=true \
             -Dosmesa=true \
             -Dprecomp-compiler=enabled \
             -Dmicrosoft-clc=disabled \
