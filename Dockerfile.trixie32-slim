@@ -32,6 +32,7 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         libllvmspirvlib-18-dev \
         meson \
         bison \
+        flex \
         byacc \
         valgrind \
         xutils-dev \
