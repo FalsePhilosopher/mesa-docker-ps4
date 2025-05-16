@@ -144,7 +144,7 @@ jobs:
             -Dvulkan-drivers=amd,swrast,virtio \
             -Dvulkan-layers=device-select,overlay,screenshot \
             -Dbuild-aco-tests=false \
-            -Dgallium-rusticl=false \
+            -Dgallium-rusticl=true \
             -Dgallium-extra-hud=true \
             -Dgallium-drivers=radeonsi,r600,zink,virgl,softpipe,llvmpipe \
             -Dgallium-nine=true \
@@ -166,9 +166,9 @@ jobs:
             -Dzstd=enabled \
             -Damd-use-llvm=true \
             -Dspirv-to-dxil=true \
-            -Dstatic-libclc=spirv \
-            -Dmesa-clc=enabled \
-            -Dinstall-mesa-clc=true \
+            -Dstatic-libclc=all \
+            -Dmesa-clc=disabled \
+            -Dinstall-mesa-clc=false \
             -Dosmesa=true \
             -Dprecomp-compiler=enabled \
             -Dmicrosoft-clc=disabled \
