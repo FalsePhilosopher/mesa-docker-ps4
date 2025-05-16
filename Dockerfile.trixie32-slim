@@ -31,6 +31,8 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         libunwind-dev \
         libllvmspirvlib-18-dev \
         meson \
+        bison \
+        byacc \
         valgrind \
         xutils-dev \
         ninja-build \
