@@ -32,6 +32,8 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         libva-dev \
         libunwind-dev \
         libxcb-glx0-dev \
+        libxcb-keysyms1-dev \
+        libx11-xcb-dev \
         meson \
         bison \
         flex \
