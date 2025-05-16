@@ -305,6 +305,7 @@ jobs:
             -Dspirv-to-dxil=true \
             -Dstatic-libclc=all \
             -Dmesa-clc=enabled \
+            -Dinstall-mesa-clc=true \
             -Dosmesa=true \
             -Dprecomp-compiler=enabled \
             -Dmicrosoft-clc=disabled \
