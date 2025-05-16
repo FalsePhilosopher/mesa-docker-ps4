@@ -17,6 +17,7 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         build-essential \
         glslang-tools \
         liblua5.4-dev \
+        libclang-cpp19-dev \
         libclang-19-dev \
         clang-19 \
         clang-tools-19 \
