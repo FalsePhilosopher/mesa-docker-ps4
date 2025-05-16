@@ -135,7 +135,6 @@ jobs:
             -w /mesa \
             mesa32 \
             bash -c "
-            apt install libclang-cpp19-dev && \
             mkdir -p build32 && \
             meson setup build32 \
             --buildtype=release \
