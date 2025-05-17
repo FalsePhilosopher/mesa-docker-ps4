@@ -167,7 +167,7 @@ jobs:
             -Damd-use-llvm=true \
             -Dspirv-to-dxil=true \
             -Dstatic-libclc=all \
-            -Dmesa-clc=auto \
+            -Dmesa-clc=system \
             -Dinstall-mesa-clc=false \
             -Dosmesa=true \
             -Dprecomp-compiler=auto \
