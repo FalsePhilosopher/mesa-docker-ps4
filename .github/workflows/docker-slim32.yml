@@ -170,7 +170,7 @@ jobs:
             -Dmesa-clc=auto \
             -Dinstall-mesa-clc=false \
             -Dosmesa=true \
-            -Dprecomp-compiler=disabled \
+            -Dprecomp-compiler=auto \
             -Dmicrosoft-clc=disabled \
             -Dvalgrind=disabled \
             -Dshader-cache=enabled \
