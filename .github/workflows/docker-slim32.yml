@@ -166,8 +166,6 @@ jobs:
             -Dzstd=enabled \
             -Damd-use-llvm=true \
             -Dspirv-to-dxil=true \
-            -Dstatic-libclc=all \
-            -Dinstall-mesa-clc=true \
             -Dosmesa=true \
             -Dprecomp-compiler=true \
             -Dmicrosoft-clc=disabled \
