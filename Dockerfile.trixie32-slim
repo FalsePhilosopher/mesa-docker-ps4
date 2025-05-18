@@ -24,7 +24,6 @@ RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | gpg --dearmor -o /etc
         libclang-19-dev \
         llvm-19-dev \
         libclc-19-dev \
-        libclang-cpp19 \
         libllvmspirvlib-19-dev \
         libxcb-shm0-dev \
         libelf-dev \
