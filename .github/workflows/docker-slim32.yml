@@ -167,10 +167,9 @@ jobs:
             -Damd-use-llvm=true \
             -Dspirv-to-dxil=true \
             -Dstatic-libclc=all \
-            -Dmesa-clc=system \
-            -Dinstall-mesa-clc=false \
+            -Dinstall-mesa-clc=true \
             -Dosmesa=true \
-            -Dprecomp-compiler=auto \
+            -Dprecomp-compiler=true \
             -Dmicrosoft-clc=disabled \
             -Dvalgrind=disabled \
             -Dshader-cache=enabled \
