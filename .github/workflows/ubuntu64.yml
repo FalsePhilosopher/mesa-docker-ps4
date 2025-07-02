@@ -57,8 +57,8 @@ jobs:
       - name: Clone Mesa repository if not cached
         if: steps.cache-mesa.outputs.cache-hit != 'true'
         run: |
-          curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/${{ env.LATEST_TAG }}/${{ env.LATEST_TAG }}.tar.gz" | tar -xzvf -
-          mv mesa-* mesa
+          mkdir -p mesa
+          curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/${{ env.LATEST_TAG }}/${{ env.LATEST_TAG }}.tar.gz" | tar -xzvf - -C mesa --strip-components=1
 
       - name: Cache libdrm repository
         id: cache-libdrm
@@ -70,8 +70,8 @@ jobs:
       - name: Clone libdrm repository if not cached
         if: steps.cache-libdrm.outputs.cache-hit != 'true'
         run: |
-         curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf -
-         mv drm-${{ env.LATESTDRM_TAG }} libdrm
+         mkdir -p libdrm
+         curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf - -C libdrm --strip-components=1
           
       - name: Cache xf86 repository
         id: cache-xf86
@@ -83,8 +83,8 @@ jobs:
       - name: Clone xf86-video-amdgpu repository if not cached
         if: steps.cache-xf86.outputs.cache-hit != 'true'
         run: |
-          curl -L "https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/archive/${{ env.LATESTXF86_TAG }}/xf86-video-amdgpu-${{ env.LATESTXF86_TAG }}.tar.gz" | tar -xzvf -
-          mv xf86-* xf86-video-amdgpu
+          mkdir -p xf86-video-amdgpu
+          curl -L "https://gitlab.freedesktop.org/xorg/driver/xf86-video-amdgpu/-/archive/${{ env.LATESTXF86_TAG }}/xf86-video-amdgpu-${{ env.LATESTXF86_TAG }}.tar.gz" | tar -xzvf - -C xf86-video-amdgpu --strip-components=1
 
       - name: Cache wayland repository
         id: cache-wayland
