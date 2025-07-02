@@ -27,8 +27,8 @@ jobs:
       - name: Clone Mesa repository if not cached
         if: steps.cache-mesa.outputs.cache-hit != 'true'
         run: |
-          curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/${{ env.LATEST_TAG }}/${{ env.LATEST_TAG }}.tar.gz" | tar -xzvf -
-          mv mesa-* mesa
+          mkdir -p mesa
+          curl -L "https://gitlab.freedesktop.org/mesa/mesa/-/archive/${{ env.LATEST_TAG }}/${{ env.LATEST_TAG }}.tar.gz" | tar -xzvf - -C mesa --strip-components=1
 
       - name: Cache libdrm repository
         id: cache-libdrm
@@ -40,9 +40,9 @@ jobs:
       - name: Clone libdrm repository if not cached
         if: steps.cache-libdrm.outputs.cache-hit != 'true'
         run: |
-         curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf -
-         mv drm-${{ env.LATESTDRM_TAG }} libdrm
-
+         mkdir -p libdrm
+         curl -L "https://gitlab.freedesktop.org/mesa/drm/-/archive/${{ env.LATESTDRM_TAG }}/drm-${{ env.LATESTDRM_TAG }}.tar.gz" | tar -xzvf - -C libdrm --strip-components=1
+  
   build-lib32mesa-ps4:
     needs: cache-mesa
     runs-on: ubuntu-latest
